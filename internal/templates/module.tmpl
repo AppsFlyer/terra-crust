@@ -1,0 +1,9 @@
+variable {{ .ModuleName }} {
+	description = {{.Description}}
+	type = object({ {{range $objName,$objType := .ObjectTypeMapping}}
+			{{$objName}}=optional({{$objType}}) {{end}}
+	})
+	default = { {{range $defaultKey,$defaultVal := .DefaultValues}}
+			{{$defaultKey}}={{$defaultVal}} {{end}}
+	}
+  }

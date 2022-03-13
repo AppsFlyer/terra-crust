@@ -1,0 +1,50 @@
+variable "consul-sync" {
+  description = test
+  type = object({
+    affinity               = optional(map(string))
+    atomic                 = optional(bool)
+    chart                  = optional(string)
+    chart_version          = optional(string)
+    cleanup_on_fail        = optional(bool)
+    consul_datacenter      = optional(string)
+    consul_image           = optional(string)
+    consul_servers_address = optional(string)
+    create_consul_sync     = optional(bool)
+    create_namespace       = optional(bool)
+    eks_cluster            = optional(string)
+    name                   = optional(string)
+    namespace              = optional(string)
+    repository             = optional(string)
+    resources              = optional(map(string))
+    timeout                = optional(number)
+    wait                   = optional(bool)
+    wait_for_jobs          = optional(bool)
+    watch_any_namespace    = optional(bool)
+  })
+  default = {
+    affinity               = ""
+    atomic                 = true
+    chart                  = "consul"
+    chart_version          = "0.39.0"
+    cleanup_on_fail        = true
+    consul_datacenter      = "dev-euw1-general"
+    consul_image           = "consul:1.11.0"
+    consul_servers_address = "dev-euw1-general.consul.appsflyer.platform"
+    create_consul_sync     = true
+    create_namespace       = true
+    eks_cluster            = ""
+    name                   = "consul"
+    namespace              = "consul"
+    repository             = "https://helm.releases.hashicorp.com"
+    resources = {
+      requested_memory = "512Mi"
+      requested_cpu    = "0.5"
+      limit_cpu        = "2"
+      limit_memory     = "2Gi"
+    }
+    timeout             = 300
+    wait                = true
+    wait_for_jobs       = true
+    watch_any_namespace = true
+  }
+}

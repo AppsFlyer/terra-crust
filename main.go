@@ -1,40 +1,74 @@
 package main
 
 import (
-	"log"
+	"fmt"
+	"os"
+	"strings"
+	"text/template"
 
-	"github.com/hashicorp/hcl/v2/hclsimple"
-	"github.com/hashicorp/hcl/v2/hclwrite"
+	"gitlab.appsflyer.com/real-time-platform/terraform-submodule-wrapper/internal/services/drivers"
 )
 
-type Config struct {
-	Variables []*Variable `hcl:"variable"`
+// const tmpl = `variable {{ .ModuleName }} {
+// 	description = {{.Description}}
+// 	type = object({
+// 			{{range $objName,$objType := .ObjectTypeMapping}}
+// 			{{$objName}}=optional({{$objType}})
+// 			{{end}}
+// 	})
+// 	default = {
+// 			{{range $defaultKey,$defaultVal := .DefaultValues}}
+// 			{{$defaultKey}}={{$defaultVal}}
+// 			{{end}}
+// 	}
+//   }`
+
+type outputExample struct {
+	ModuleName        string
+	Description       string
+	ObjectTypeMapping map[string]string
+	DefaultValues     map[string]string
 }
 
-type Variable struct {
-	Name        string          `hcl:"name,label"`
-	Type        hclwrite.Tokens `hcl:"type,attr"`
-	Description string          `hcl:"description,attr"`
-	Default     hclwrite.Tokens `hcl:"default,attr"`
-}
-type ServiceConfig struct {
-	Protocol   string          `hcl:"protocol,label"`
-	Type       string          `hcl:"type,label"`
-	ListenAddr string          `hcl:"listen_addr"`
-	Processes  []ProcessConfig `hcl:"process,block"`
-}
-
-type ProcessConfig struct {
-	Type    string   `hcl:"type,label"`
-	Command []string `hcl:"command"`
-}
+//hclwrite.Tokens
 
 func main() {
-	var config Config
-	err := hclsimple.DecodeFile("variables.hcl", nil, &config)
+
+	parser := drivers.NewTerraformParser("./consul-sync")
+	m, err := parser.Parse()
 	if err != nil {
-		log.Fatalf("Failed to load configuration: %s", err)
+		fmt.Println("failed to parse", err.Error())
 	}
-	log.Printf("Configuration is %#v", config)
+
+	out := &outputExample{
+		ModuleName:        "consul-sync",
+		Description:       "test",
+		ObjectTypeMapping: make(map[string]string, len(m.Variables)),
+		DefaultValues:     make(map[string]string, len(m.Variables)),
+	}
+
+	for _, v := range m.Variables {
+		if v.Default != nil {
+			out.ObjectTypeMapping[v.Name] = strings.ReplaceAll(string(v.Type.Bytes()), " ", "")
+			out.DefaultValues[v.Name] = string(v.Default.Bytes())
+		}
+	}
+
+	// t := template.Must(template.New("tmpl").Parse(tmpl))
+
+	// var tpl bytes.Buffer
+	// if err := t.Execute(&tpl, out); err != nil {
+	// 	fmt.Println("failed executer", err.Error())
+	// }
+
+	// parse the template
+	tmpl, _ := template.ParseFiles("templates/module.tmpl")
+
+	// create a new file
+	file, _ := os.Create("final-module.tf")
+	defer file.Close()
+
+	// apply the template to the vars map and write the result to file.
+	tmpl.Execute(file, out)
 
 }

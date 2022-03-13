@@ -11,28 +11,29 @@ import (
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/zclconf/go-cty/cty"
+	"gitlab.appsflyer.com/real-time-platform/terraform-submodule-wrapper/types"
 )
 
-type localParser struct {
+type TerraformParser struct {
 	Source string
 }
 
 // newLocalParser return a new parser with local terraform module.
-func newLocalParser(source string) Parser {
-	return &localParser{
+func NewTerraformParser(source string) Parser {
+	return &TerraformParser{
 		Source: source,
 	}
 }
 
 // Parse parses a local terraform module and returns module structs
-func (p *localParser) Parse() (*Module, error) {
+func (p *TerraformParser) Parse() (*types.Module, error) {
 	if !(strings.HasPrefix(p.Source, "./") || strings.HasPrefix(p.Source, "../")) {
 		return nil, errors.New("Invalid local module path.")
 	}
 
-	var variables []*Variable
-	var outputs []*Output
-	var resources []*Resource
+	var variables []*types.Variable
+	var outputs []*types.Output
+	var resources []*types.Resource
 
 	err := filepath.Walk(p.Source,
 		func(path string, info os.FileInfo, err error) error {
@@ -72,7 +73,7 @@ func (p *localParser) Parse() (*Module, error) {
 		return nil, err
 	}
 
-	return &Module{
+	return &types.Module{
 		Source:    p.Source,
 		Variables: variables,
 		Outputs:   outputs,
@@ -80,8 +81,8 @@ func (p *localParser) Parse() (*Module, error) {
 	}, nil
 }
 
-func (p *localParser) parseVariable(block *hclwrite.Block) *Variable {
-	variable := Variable{
+func (p *TerraformParser) parseVariable(block *hclwrite.Block) *types.Variable {
+	variable := types.Variable{
 		Name:    block.Labels()[0],
 		Default: hclwrite.TokensForValue(cty.StringVal("")),
 	}
@@ -106,8 +107,8 @@ func (p *localParser) parseVariable(block *hclwrite.Block) *Variable {
 	return &variable
 }
 
-func (p *localParser) parseOutput(block *hclwrite.Block) *Output {
-	output := Output{
+func (p *TerraformParser) parseOutput(block *hclwrite.Block) *types.Output {
+	output := types.Output{
 		Name:        block.Labels()[0],
 		Description: "",
 	}
@@ -128,8 +129,8 @@ func (p *localParser) parseOutput(block *hclwrite.Block) *Output {
 	return &output
 }
 
-func (p *localParser) parseResource(block *hclwrite.Block) *Resource {
-	resource := Resource{
+func (p *TerraformParser) parseResource(block *hclwrite.Block) *types.Resource {
+	resource := types.Resource{
 		Type: block.Labels()[0],
 		Name: block.Labels()[1],
 	}
