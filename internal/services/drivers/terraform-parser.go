@@ -11,31 +11,25 @@ import (
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/zclconf/go-cty/cty"
-	"gitlab.appsflyer.com/real-time-platform/terraform-submodule-wrapper/types"
+	"gitlab.appsflyer.com/real-time-platform/terraform-submodule-wrapper/internal/types"
 )
 
 type TerraformParser struct {
-	Source string
 }
 
 // newLocalParser return a new parser with local terraform module.
-func NewTerraformParser(source string) Parser {
-	return &TerraformParser{
-		Source: source,
-	}
+func NewTerraformParser() Parser {
+	return &TerraformParser{}
 }
 
 // Parse parses a local terraform module and returns module structs
-func (p *TerraformParser) Parse() (*types.Module, error) {
-	if !(strings.HasPrefix(p.Source, "./") || strings.HasPrefix(p.Source, "../")) {
+func (p *TerraformParser) Parse(path string) (map[string]*types.Module, error) {
+	if !(strings.HasPrefix(path, "./") || strings.HasPrefix(path, "../")) {
 		return nil, errors.New("Invalid local module path.")
 	}
 
-	var variables []*types.Variable
-	var outputs []*types.Output
-	var resources []*types.Resource
-
-	err := filepath.Walk(p.Source,
+	modulesMap := make(map[string]*types.Module)
+	err := filepath.Walk(path,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -56,14 +50,20 @@ func (p *TerraformParser) Parse() (*types.Module, error) {
 			}
 
 			body := file.Body()
+			moduleName := strings.Split(path, "/")[1]
+			modulesMap[moduleName] = &types.Module{
+				Variables: make([]*types.Variable, 0),
+				Outputs:   make([]*types.Output, 0),
+				Resources: make([]*types.Resource, 0),
+			}
 			for _, block := range body.Blocks() {
 				switch block.Type() {
 				case "variable":
-					variables = append(variables, p.parseVariable(block))
+					modulesMap[moduleName].Variables = append(modulesMap[moduleName].Variables, p.parseVariable(block))
 				case "output":
-					outputs = append(outputs, p.parseOutput(block))
+					modulesMap[moduleName].Outputs = append(modulesMap[moduleName].Outputs, p.parseOutput(block))
 				case "resource":
-					resources = append(resources, p.parseResource(block))
+					modulesMap[moduleName].Resources = append(modulesMap[moduleName].Resources, p.parseResource(block))
 				}
 			}
 
@@ -73,12 +73,7 @@ func (p *TerraformParser) Parse() (*types.Module, error) {
 		return nil, err
 	}
 
-	return &types.Module{
-		Source:    p.Source,
-		Variables: variables,
-		Outputs:   outputs,
-		Resources: resources,
-	}, nil
+	return modulesMap, nil
 }
 
 func (p *TerraformParser) parseVariable(block *hclwrite.Block) *types.Variable {
