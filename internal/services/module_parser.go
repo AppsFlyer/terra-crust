@@ -16,6 +16,11 @@ type ModuleParser struct {
 	templatePath  string
 }
 
+const moduleDescription = `<<EOT
+(Optional) Storage Local Provisioner Module will be used by default.
+[Readme](https://gitlab.appsflyer.com/real-time-platform/af-rti-iac/modules/strimzi/-/blob/master/terraform/modules/%s/README.md)
+EOT`
+
 func NewParser(driver drivers.Parser, templatePath string) *ModuleParser {
 	return &ModuleParser{
 		parsingDriver: driver,
@@ -40,7 +45,7 @@ func (p *ModuleParser) ParseModulesVariables(rootFolder string) (*bytes.Buffer, 
 
 		out := &templates.VariablesModulesTF{
 			ModuleName:        k,
-			Description:       "test",
+			Description:       fmt.Sprintf(moduleDescription, k),
 			ObjectTypeMapping: make(map[string]string, len(m.Variables)),
 			DefaultValues:     make(map[string]string, len(m.Variables)),
 		}
