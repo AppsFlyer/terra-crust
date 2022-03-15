@@ -20,10 +20,10 @@ watch_any_namespace = coalesce(var.consul_sync.watch_any_namespace, true)
 
 resources = var.consul_sync.resources != null ? merge(var.consul_sync.resources,
 tomap({ 
-limit_cpu = contains(keys(var.consul_sync.resources),limit_cpu) != false ? var.consul_sync.resources.limit_cpu : "2"
-limit_memory = contains(keys(var.consul_sync.resources),limit_memory) != false ? var.consul_sync.resources.limit_memory : "2Gi"
-requested_cpu = contains(keys(var.consul_sync.resources),requested_cpu) != false ? var.consul_sync.resources.requested_cpu : "0.5"
-requested_memory = contains(keys(var.consul_sync.resources),requested_memory) != false ? var.consul_sync.resources.requested_memory : "512Mi"}
+limit_cpu = contains(keys(var.consul_sync.resources),"limit_cpu") != false ? var.consul_sync.resources.limit_cpu : "2"
+limit_memory = contains(keys(var.consul_sync.resources),"limit_memory") != false ? var.consul_sync.resources.limit_memory : "2Gi"
+requested_cpu = contains(keys(var.consul_sync.resources),"requested_cpu") != false ? var.consul_sync.resources.requested_cpu : "0.5"
+requested_memory = contains(keys(var.consul_sync.resources),"requested_memory") != false ? var.consul_sync.resources.requested_memory : "512Mi"}
 )):{
  limit_cpu = "2"
  limit_memory = "2Gi"
@@ -45,9 +45,9 @@ root_log_level = coalesce(var.cruise_control.root_log_level, "INFO")
 
 broker_capacity = var.cruise_control.broker_capacity != null ? merge(var.cruise_control.broker_capacity,
 tomap({ 
-cpu_utilization = contains(keys(var.cruise_control.broker_capacity),cpu_utilization) != false ? var.cruise_control.broker_capacity.cpu_utilization : 100
-inbound_network = contains(keys(var.cruise_control.broker_capacity),inbound_network) != false ? var.cruise_control.broker_capacity.inbound_network : "10000KB/s"
-outbound_network = contains(keys(var.cruise_control.broker_capacity),outbound_network) != false ? var.cruise_control.broker_capacity.outbound_network : "10000KB/s"}
+cpu_utilization = contains(keys(var.cruise_control.broker_capacity),"cpu_utilization") != false ? var.cruise_control.broker_capacity.cpu_utilization : 100
+inbound_network = contains(keys(var.cruise_control.broker_capacity),"inbound_network") != false ? var.cruise_control.broker_capacity.inbound_network : "10000KB/s"
+outbound_network = contains(keys(var.cruise_control.broker_capacity),"outbound_network") != false ? var.cruise_control.broker_capacity.outbound_network : "10000KB/s"}
 )):{
  cpu_utilization = 100
  inbound_network = "10000KB/s"
@@ -55,18 +55,18 @@ outbound_network = contains(keys(var.cruise_control.broker_capacity),outbound_ne
 } 
 jvm = var.cruise_control.jvm != null ? merge(var.cruise_control.jvm,
 tomap({ 
-xms = contains(keys(var.cruise_control.jvm),xms) != false ? var.cruise_control.jvm.xms : "512m"
-xmx = contains(keys(var.cruise_control.jvm),xmx) != false ? var.cruise_control.jvm.xmx : "2048m"}
+xms = contains(keys(var.cruise_control.jvm),"xms") != false ? var.cruise_control.jvm.xms : "512m"
+xmx = contains(keys(var.cruise_control.jvm),"xmx") != false ? var.cruise_control.jvm.xmx : "2048m"}
 )):{
  xms = "512m"
  xmx = "2048m"
 } 
 resources = var.cruise_control.resources != null ? merge(var.cruise_control.resources,
 tomap({ 
-limit_cpu = contains(keys(var.cruise_control.resources),limit_cpu) != false ? var.cruise_control.resources.limit_cpu : "2"
-limit_memory = contains(keys(var.cruise_control.resources),limit_memory) != false ? var.cruise_control.resources.limit_memory : "2Gi"
-requested_cpu = contains(keys(var.cruise_control.resources),requested_cpu) != false ? var.cruise_control.resources.requested_cpu : "0.5"
-requested_memory = contains(keys(var.cruise_control.resources),requested_memory) != false ? var.cruise_control.resources.requested_memory : "512Mi"}
+limit_cpu = contains(keys(var.cruise_control.resources),"limit_cpu") != false ? var.cruise_control.resources.limit_cpu : "2"
+limit_memory = contains(keys(var.cruise_control.resources),"limit_memory") != false ? var.cruise_control.resources.limit_memory : "2Gi"
+requested_cpu = contains(keys(var.cruise_control.resources),"requested_cpu") != false ? var.cruise_control.resources.requested_cpu : "0.5"
+requested_memory = contains(keys(var.cruise_control.resources),"requested_memory") != false ? var.cruise_control.resources.requested_memory : "512Mi"}
 )):{
  limit_cpu = "2"
  limit_memory = "2Gi"
@@ -108,10 +108,10 @@ root_log_level = coalesce(var.entity_operator.root_log_level, "INFO")
 
 resources = var.entity_operator.resources != null ? merge(var.entity_operator.resources,
 tomap({ 
-limit_cpu = contains(keys(var.entity_operator.resources),limit_cpu) != false ? var.entity_operator.resources.limit_cpu : "1"
-limit_memory = contains(keys(var.entity_operator.resources),limit_memory) != false ? var.entity_operator.resources.limit_memory : "512Mi"
-requested_cpu = contains(keys(var.entity_operator.resources),requested_cpu) != false ? var.entity_operator.resources.requested_cpu : "0.5"
-requested_memory = contains(keys(var.entity_operator.resources),requested_memory) != false ? var.entity_operator.resources.requested_memory : "256Mi"}
+limit_cpu = contains(keys(var.entity_operator.resources),"limit_cpu") != false ? var.entity_operator.resources.limit_cpu : "1"
+limit_memory = contains(keys(var.entity_operator.resources),"limit_memory") != false ? var.entity_operator.resources.limit_memory : "512Mi"
+requested_cpu = contains(keys(var.entity_operator.resources),"requested_cpu") != false ? var.entity_operator.resources.requested_cpu : "0.5"
+requested_memory = contains(keys(var.entity_operator.resources),"requested_memory") != false ? var.entity_operator.resources.requested_memory : "256Mi"}
 )):{
  limit_cpu = "1"
  limit_memory = "512Mi"
@@ -129,18 +129,18 @@ root_log_level = coalesce(var.kafka.root_log_level, "INFO")
 
 jvm = var.kafka.jvm != null ? merge(var.kafka.jvm,
 tomap({ 
-xms = contains(keys(var.kafka.jvm),xms) != false ? var.kafka.jvm.xms : "8192m"
-xmx = contains(keys(var.kafka.jvm),xmx) != false ? var.kafka.jvm.xmx : "8192m"}
+xms = contains(keys(var.kafka.jvm),"xms") != false ? var.kafka.jvm.xms : "8192m"
+xmx = contains(keys(var.kafka.jvm),"xmx") != false ? var.kafka.jvm.xmx : "8192m"}
 )):{
  xms = "8192m"
  xmx = "8192m"
 } 
 resources = var.kafka.resources != null ? merge(var.kafka.resources,
 tomap({ 
-limit_cpu = contains(keys(var.kafka.resources),limit_cpu) != false ? var.kafka.resources.limit_cpu : "8"
-limit_memory = contains(keys(var.kafka.resources),limit_memory) != false ? var.kafka.resources.limit_memory : "63Gi"
-requested_cpu = contains(keys(var.kafka.resources),requested_cpu) != false ? var.kafka.resources.requested_cpu : "6"
-requested_memory = contains(keys(var.kafka.resources),requested_memory) != false ? var.kafka.resources.requested_memory : "60Gi"}
+limit_cpu = contains(keys(var.kafka.resources),"limit_cpu") != false ? var.kafka.resources.limit_cpu : "8"
+limit_memory = contains(keys(var.kafka.resources),"limit_memory") != false ? var.kafka.resources.limit_memory : "63Gi"
+requested_cpu = contains(keys(var.kafka.resources),"requested_cpu") != false ? var.kafka.resources.requested_cpu : "6"
+requested_memory = contains(keys(var.kafka.resources),"requested_memory") != false ? var.kafka.resources.requested_memory : "60Gi"}
 )):{
  limit_cpu = "8"
  limit_memory = "63Gi"
@@ -222,10 +222,10 @@ topic_regex = coalesce(var.kafka_exporter.topic_regex, ".*")
 
 resources = var.kafka_exporter.resources != null ? merge(var.kafka_exporter.resources,
 tomap({ 
-limit_cpu = contains(keys(var.kafka_exporter.resources),limit_cpu) != false ? var.kafka_exporter.resources.limit_cpu : "1"
-limit_memory = contains(keys(var.kafka_exporter.resources),limit_memory) != false ? var.kafka_exporter.resources.limit_memory : "512Mi"
-requested_cpu = contains(keys(var.kafka_exporter.resources),requested_cpu) != false ? var.kafka_exporter.resources.requested_cpu : "0.5"
-requested_memory = contains(keys(var.kafka_exporter.resources),requested_memory) != false ? var.kafka_exporter.resources.requested_memory : "256Mi"}
+limit_cpu = contains(keys(var.kafka_exporter.resources),"limit_cpu") != false ? var.kafka_exporter.resources.limit_cpu : "1"
+limit_memory = contains(keys(var.kafka_exporter.resources),"limit_memory") != false ? var.kafka_exporter.resources.limit_memory : "512Mi"
+requested_cpu = contains(keys(var.kafka_exporter.resources),"requested_cpu") != false ? var.kafka_exporter.resources.requested_cpu : "0.5"
+requested_memory = contains(keys(var.kafka_exporter.resources),"requested_memory") != false ? var.kafka_exporter.resources.requested_memory : "256Mi"}
 )):{
  limit_cpu = "1"
  limit_memory = "512Mi"
@@ -279,18 +279,18 @@ root_log_level = coalesce(var.zookeeper.root_log_level, "INFO")
 
 jvm = var.zookeeper.jvm != null ? merge(var.zookeeper.jvm,
 tomap({ 
-xms = contains(keys(var.zookeeper.jvm),xms) != false ? var.zookeeper.jvm.xms : "4096m"
-xmx = contains(keys(var.zookeeper.jvm),xmx) != false ? var.zookeeper.jvm.xmx : "4096m"}
+xms = contains(keys(var.zookeeper.jvm),"xms") != false ? var.zookeeper.jvm.xms : "4096m"
+xmx = contains(keys(var.zookeeper.jvm),"xmx") != false ? var.zookeeper.jvm.xmx : "4096m"}
 )):{
  xms = "4096m"
  xmx = "4096m"
 } 
 resources = var.zookeeper.resources != null ? merge(var.zookeeper.resources,
 tomap({ 
-limit_cpu = contains(keys(var.zookeeper.resources),limit_cpu) != false ? var.zookeeper.resources.limit_cpu : "2"
-limit_memory = contains(keys(var.zookeeper.resources),limit_memory) != false ? var.zookeeper.resources.limit_memory : "6Gi"
-requested_cpu = contains(keys(var.zookeeper.resources),requested_cpu) != false ? var.zookeeper.resources.requested_cpu : "1"
-requested_memory = contains(keys(var.zookeeper.resources),requested_memory) != false ? var.zookeeper.resources.requested_memory : "5Gi"}
+limit_cpu = contains(keys(var.zookeeper.resources),"limit_cpu") != false ? var.zookeeper.resources.limit_cpu : "2"
+limit_memory = contains(keys(var.zookeeper.resources),"limit_memory") != false ? var.zookeeper.resources.limit_memory : "6Gi"
+requested_cpu = contains(keys(var.zookeeper.resources),"requested_cpu") != false ? var.zookeeper.resources.requested_cpu : "1"
+requested_memory = contains(keys(var.zookeeper.resources),"requested_memory") != false ? var.zookeeper.resources.requested_memory : "5Gi"}
 )):{
  limit_cpu = "2"
  limit_memory = "6Gi"
