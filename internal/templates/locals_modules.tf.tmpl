@@ -5,7 +5,7 @@ locals{ {{range $moduleName,$moduleData := .Module}}
 {{range $complexName,$complexValue :=  $moduleData.ComplexLocals}}
 {{$complexName}} = var.{{$moduleName}}.{{$complexName}} != null ? merge(var.{{$moduleName}}.{{$complexName}},
 tomap({ {{range $propertyName, $propertyValue := $complexValue}}
-{{$propertyName}} = contains(keys(var.{{$moduleName}}.{{$complexName}}),{{$propertyName}}) != false ? var.{{$moduleName}}.{{$complexName}}.{{$propertyName}} : {{$propertyValue}}{{end}}}
+{{$propertyName}} = contains(keys(var.{{$moduleName}}.{{$complexName}}),"{{$propertyName}}") != false ? var.{{$moduleName}}.{{$complexName}}.{{$propertyName}} : {{$propertyValue}}{{end}}}
 )):{
 {{range $name, $value := $complexValue}} {{$name}} = {{$value}}
 {{end}}} {{end}}
