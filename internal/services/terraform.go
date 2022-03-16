@@ -51,7 +51,6 @@ func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPat
 		}
 
 		for _, v := range m.Variables {
-			fmt.Printf("module name :%s var name: %s default: %s \n", k, v.Name, string(v.Default.Bytes()))
 			if v.Default != nil && string(v.Default.Bytes()) != `""` {
 				out[k].ObjectTypeMapping[v.Name] = strings.ReplaceAll(string(v.Type.Bytes()), " ", "")
 				out[k].DefaultValues[v.Name] = string(v.Default.Bytes())
@@ -76,7 +75,6 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 		if len(m.Variables) == 0 {
 			continue
 		}
-		fmt.Printf("module name :%s \n", k)
 
 		out.Module[k] = &templates.ModuleData{
 			SimpleLocals:    make(map[string]string),
