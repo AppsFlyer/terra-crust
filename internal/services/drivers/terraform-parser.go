@@ -51,11 +51,14 @@ func (p *TerraformParser) Parse(path string) (map[string]*types.Module, error) {
 
 			body := file.Body()
 			moduleName := strings.Split(path, "/")[1]
-			modulesMap[moduleName] = &types.Module{
-				Variables: make([]*types.Variable, 0),
-				Outputs:   make([]*types.Output, 0),
-				Resources: make([]*types.Resource, 0),
+			if _, ok := modulesMap[moduleName]; !ok {
+				modulesMap[moduleName] = &types.Module{
+					Variables: make([]*types.Variable, 0),
+					Outputs:   make([]*types.Output, 0),
+					Resources: make([]*types.Resource, 0),
+				}
 			}
+
 			for _, block := range body.Blocks() {
 				switch block.Type() {
 				case "variable":
