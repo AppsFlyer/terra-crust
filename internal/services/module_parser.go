@@ -17,8 +17,8 @@ type ModuleParser struct {
 }
 
 const moduleDescription = `<<EOT
-(Optional) %s Module will be used by default.
-[Readme](https://gitlab.appsflyer.com/real-time-platform/af-rti-iac/modules/strimzi/-/blob/master/terraform/modules/%s/README.md)
+	(Optional) %s Module will be used by default.
+	[Readme](https://gitlab.appsflyer.com/real-time-platform/af-rti-iac/modules/strimzi/-/blob/master/terraform/modules/%s/README.md)
 EOT`
 
 func NewParser(driver drivers.Parser, templatePath string) *ModuleParser {
