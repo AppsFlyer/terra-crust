@@ -7,7 +7,6 @@ type LocalsModulesTF struct {
 type ComplexVariableData map[string]string
 
 type ModuleData struct {
-	SimpleLocals    map[string]string
-	ComplexLocals   map[string]ComplexVariableData
-	LocalsStringKey map[string]ComplexVariableData
+	SimpleLocals map[string]string
+	MapLocals    map[string]ComplexVariableData
 }
