@@ -10,15 +10,15 @@ import (
 func main() {
 
 	driver := drivers.NewTerraformParser()
-	parser := services.NewParser(driver, "./internal/templates/variables_modules.tf.tmpl")
+	parser := services.NewParser(driver)
 
-	terraform := services.NewTerraform(parser, "./internal/templates/locals_modules.tf.tmpl", "./internal/templates/variables_modules.tf.tmpl")
+	terraform := services.NewTerraform(parser, "./internal/templates/locals_modules.tmpl", "./internal/templates/variables_modules.tmpl")
 
-	if err := terraform.GenerateModuleVariableObject("./modules", "final-module.tf"); err != nil {
+	if err := terraform.GenerateModuleVariableObject("./modules", "."); err != nil {
 		fmt.Println(err.Error())
 	}
 
-	err := terraform.GenerateModuleDefaultLocals("./modules", "test-module.tf")
+	err := terraform.GenerateModuleDefaultLocals("./modules", ".")
 	if err != nil {
 		fmt.Println(err.Error())
 	}

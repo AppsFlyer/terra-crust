@@ -9,13 +9,11 @@ import (
 
 type ModuleParser struct {
 	parsingDriver drivers.Parser
-	templatePath  string
 }
 
-func NewParser(driver drivers.Parser, templatePath string) *ModuleParser {
+func NewParser(driver drivers.Parser) *ModuleParser {
 	return &ModuleParser{
 		parsingDriver: driver,
-		templatePath:  templatePath,
 	}
 }
 

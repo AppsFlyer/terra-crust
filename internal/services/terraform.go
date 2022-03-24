@@ -58,7 +58,7 @@ func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPat
 		}
 	}
 
-	return t.WriteTemplateToFile(t.objectTemplatePath, destinationPath, out)
+	return t.WriteTemplateToFile("variables.tf", t.objectTemplatePath, destinationPath, out)
 }
 
 func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath string) error {
@@ -77,9 +77,8 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 		}
 
 		out.Module[k] = &templates.ModuleData{
-			SimpleLocals:    make(map[string]string),
-			ComplexLocals:   make(map[string]templates.ComplexVariableData),
-			LocalsStringKey: make(map[string]templates.ComplexVariableData),
+			SimpleLocals: make(map[string]string),
+			MapLocals:    make(map[string]templates.ComplexVariableData),
 		}
 
 		for _, v := range m.Variables {
@@ -109,40 +108,41 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 						continue
 					}
 
-					if strings.Contains(propertyName, `"`) {
-						if _, ok := out.Module[k].LocalsStringKey[v.Name]; !ok {
-							out.Module[k].LocalsStringKey[v.Name] = make(templates.ComplexVariableData)
-						}
-
-						out.Module[k].LocalsStringKey[v.Name][propertyName] = propertyValue
-						continue
+					//if property
+					if !strings.Contains(propertyName, `"`) {
+						propertyName = fmt.Sprintf(`"%s"`, propertyName)
 					}
 
-					if _, ok := out.Module[k].ComplexLocals[v.Name]; !ok {
-						out.Module[k].ComplexLocals[v.Name] = make(templates.ComplexVariableData)
+					if _, ok := out.Module[k].MapLocals[v.Name]; !ok {
+						out.Module[k].MapLocals[v.Name] = make(templates.ComplexVariableData)
 					}
 
-					out.Module[k].ComplexLocals[v.Name][propertyName] = propertyValue
+					out.Module[k].MapLocals[v.Name][propertyName] = propertyValue
+					continue
 				}
 			}
 		}
 	}
 
-	return t.WriteTemplateToFile(t.localsTemplatePath, destinationPath, out)
+	return t.WriteTemplateToFile("locals.tf", t.localsTemplatePath, destinationPath, out)
 }
 
-func (t *Terraform) WriteTemplateToFile(templatePath, destinationPath string, out interface{}) error {
-	tmpl := template.Must(template.ParseFiles(templatePath))
+func (t *Terraform) WriteTemplateToFile(fileName, templatePath, destinationPath string, out interface{}) error {
+	splittedPath := strings.Split(templatePath, "/")
+	templateName := splittedPath[len(splittedPath)-1]
+	tmpl, _ := template.New(templateName).Funcs(funcMap).ParseFiles(templatePath)
+
 	buf := new(bytes.Buffer)
 	if err := tmpl.Execute(buf, out); err != nil {
 		return err
 	}
 
-	if err := os.Remove(destinationPath); (err != nil) && (!errors.Is(err, os.ErrNotExist)) {
+	filePath := fmt.Sprintf("%s/%s", destinationPath, fileName)
+	if err := os.Remove(filePath); (err != nil) && (!errors.Is(err, os.ErrNotExist)) {
 		return err
 	}
 
-	file, _ := os.OpenFile(destinationPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	file, _ := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 
 	defer file.Close()
 
@@ -152,4 +152,23 @@ func (t *Terraform) WriteTemplateToFile(templatePath, destinationPath string, ou
 	}
 
 	return nil
+}
+
+var funcMap = template.FuncMap{
+	"SimpleWrap":        SimpleWrap,
+	"ModuleDataWrapper": ModuleDataWrapper,
+}
+
+func ModuleDataWrapper(moduleName string, moduleData templates.ModuleData) map[string]interface{} {
+	return map[string]interface{}{
+		"ModuleName": moduleName,
+		"ModuleData": moduleData,
+	}
+}
+
+func SimpleWrap(moduleName string, moduleData map[string]string) map[string]interface{} {
+	return map[string]interface{}{
+		"ModuleData":   moduleData,
+		"VariableName": moduleName,
+	}
 }
