@@ -11,7 +11,7 @@ func InitTerraformGeneratorService(log logger.Logger) *services.Terraform {
 
 	parserDriver := drivers.NewTerraformParser()
 	parser := services.NewParser(parserDriver)
-	tfSvc := services.NewTerraform(parser, config.GetString("LOCALS_TEMPLATE_PATH"), config.GetString("VARIABLE_TEMPLATE_PATH"))
+	tfSvc := services.NewTerraform(parser, config.GetString("LOCALS_TEMPLATE_PATH"), config.GetString("VARIABLE_TEMPLATE_PATH"), config.GetString("MAIN_TEMPLATE_PATH"))
 
 	return tfSvc
 }

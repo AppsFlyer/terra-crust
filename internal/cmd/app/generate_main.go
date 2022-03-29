@@ -5,19 +5,19 @@ import (
 	"gitlab.appsflyer.com/real-time-platform/terraform-submodule-wrapper/internal/cmd/types"
 )
 
-func generateVariableObject(root *RootCommand) *cobra.Command {
+func generateMain(root *RootCommand) *cobra.Command {
 	var flags types.TFGenerateFlags = types.TFGenerateFlags{}
 	cmd := &cobra.Command{
-		Use:     "terraform-variable",
-		Short:   "create general object terraform variable file",
+		Use:     "terraform-main",
+		Short:   "create general object terraform main file",
 		Example: "",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			log := root.log.WithName("generate-variable-object")
+			log := root.log.WithName("generate-main-file")
 
 			terraformSvc := InitTerraformGeneratorService(log)
 
-			if err := terraformSvc.GenerateModuleVariableObject(flags.SourcePath, flags.DestinationPath); err != nil {
-				log.ErrorWithError("Failed generating the terraform variable file", err)
+			if err := terraformSvc.GenerateMain(flags.SourcePath, flags.DestinationPath); err != nil {
+				log.ErrorWithError("Failed generating the terraform main file", err)
 
 				return err
 			}

@@ -10,7 +10,7 @@ import (
 
 func main() {
 	log := logger.NewLogger(logger.WithName("terraform-generate-tool"))
-	if err := app.NewRootCommand().Execute(); err != nil {
+	if err := app.NewRootCommand(log).Execute(); err != nil {
 		if err == context.Canceled {
 			os.Exit(0)
 		}
