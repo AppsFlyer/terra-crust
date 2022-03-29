@@ -20,13 +20,15 @@ type Terraform struct {
 	parser             *ModuleParser
 	localsTemplatePath string
 	objectTemplatePath string
+	mainTemplatePath   string
 }
 
-func NewTerraform(parser *ModuleParser, localsTemplatePath, objectTemplatePath string) *Terraform {
+func NewTerraform(parser *ModuleParser, localsTemplatePath, objectTemplatePath, mainTemplatePath string) *Terraform {
 	return &Terraform{
 		parser:             parser,
 		localsTemplatePath: localsTemplatePath,
 		objectTemplatePath: objectTemplatePath,
+		mainTemplatePath:   mainTemplatePath,
 	}
 }
 
@@ -108,7 +110,7 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 						continue
 					}
 
-					//if property
+					//if property name is none string
 					if !strings.Contains(propertyName, `"`) {
 						propertyName = fmt.Sprintf(`"%s"`, propertyName)
 					}
@@ -127,18 +129,94 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 	return t.WriteTemplateToFile("locals.tf", t.localsTemplatePath, destinationPath, out)
 }
 
-func (t *Terraform) WriteTemplateToFile(fileName, templatePath, destinationPath string, out interface{}) error {
-	splittedPath := strings.Split(templatePath, "/")
-	templateName := splittedPath[len(splittedPath)-1]
-	tmpl, _ := template.New(templateName).Funcs(funcMap).ParseFiles(templatePath)
+// func (t *Terraform) getVariableDetails(rawVariableData string) (string, string, error) {
 
-	buf := new(bytes.Buffer)
-	if err := tmpl.Execute(buf, out); err != nil {
+// }
+
+func (t *Terraform) GenerateMain(modulesFilePath, destinationPath string) error {
+	moduleList, err := t.parser.GetModulesList(modulesFilePath)
+	if err != nil {
 		return err
 	}
 
+	out := &templates.MainModuleTF{
+		Module:   make(map[string]*templates.MainModuleData),
+		RootPath: modulesFilePath,
+	}
+
+	for k, m := range moduleList {
+		if len(m.Variables) == 0 {
+			continue
+		}
+
+		out.Module[k] = &templates.MainModuleData{
+			ModuleData: &templates.ModuleData{
+				SimpleLocals: make(map[string]string),
+				MapLocals:    make(map[string]templates.ComplexVariableData),
+			},
+			RequiredFields: make(map[string]string),
+		}
+
+		for _, v := range m.Variables {
+			//Simple variable
+			if v.Default != nil && string(v.Default.Bytes()) != `""` && !strings.Contains(string(v.Type.Bytes()), "map") {
+				out.Module[k].SimpleLocals[v.Name] = string(v.Default.Bytes())
+			}
+
+			//Map variable
+			if v.Default != nil && string(v.Default.Bytes()) != `""` && strings.Contains(string(v.Type.Bytes()), "map") {
+				rawDefault := string(v.Default.Bytes())
+				rawDefault = strings.ReplaceAll(rawDefault, "{", "")
+				rawDefault = strings.ReplaceAll(rawDefault, "}", "")
+				rawDefault = strings.TrimSpace(rawDefault)
+
+				splittedRawString := strings.Split(rawDefault, "\n")
+
+				seperator := "="
+				if strings.Contains(rawDefault, ":") {
+					seperator = ":"
+				}
+				for i := range splittedRawString {
+					rawDataString := strings.Split(splittedRawString[i], seperator)
+					propertyName := strings.TrimSpace(rawDataString[0])
+					if _, ok := out.Module[k].MapLocals[v.Name]; !ok {
+						out.Module[k].MapLocals[v.Name] = make(templates.ComplexVariableData)
+					}
+
+					out.Module[k].MapLocals[v.Name][propertyName] = ""
+				}
+			}
+
+			//Required Variable
+			if v.Default == nil || string(v.Default.Bytes()) == `""` {
+				out.Module[k].RequiredFields[v.Name] = ""
+			}
+		}
+	}
+	return t.WriteTemplateToFile("main.tf", t.mainTemplatePath, destinationPath, out)
+}
+
+func (t *Terraform) WriteTemplateToFile(fileName, templatePath, destinationPath string, out interface{}) error {
+	splittedPath := strings.Split(templatePath, "/")
+	templateName := splittedPath[len(splittedPath)-1]
+	tmpl, err := template.New(templateName).Funcs(funcMap).ParseFiles(templatePath)
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+
+	fmt.Printf("template name : %s , template path : %s destination path:%s \n", templateName, templatePath, destinationPath)
+	fmt.Printf("out : %+v  \n", out)
+	buf := new(bytes.Buffer)
+	if err = tmpl.Execute(buf, out); err != nil {
+		fmt.Println("execute err")
+		return err
+	}
+	fmt.Println("testetset")
+
 	filePath := fmt.Sprintf("%s/%s", destinationPath, fileName)
 	if err := os.Remove(filePath); (err != nil) && (!errors.Is(err, os.ErrNotExist)) {
+		fmt.Println("rm err")
 		return err
 	}
 
@@ -146,7 +224,7 @@ func (t *Terraform) WriteTemplateToFile(fileName, templatePath, destinationPath 
 
 	defer file.Close()
 
-	_, err := file.WriteString(buf.String())
+	_, err = file.WriteString(buf.String())
 	if err != nil {
 		fmt.Println(err.Error())
 	}

@@ -12,7 +12,7 @@ type RootCommand struct {
 	Verbose bool
 }
 
-func NewRootCommand() *RootCommand {
+func NewRootCommand(logger logger.Logger) *RootCommand {
 	root := &RootCommand{}
 	root.Command = &cobra.Command{
 		Use:           "generate [command]",
@@ -21,13 +21,14 @@ func NewRootCommand() *RootCommand {
 		SilenceUsage:  true,
 	}
 	root.Command.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-		root.log = logger.NewLogger(logger.WithName("generate-tool"))
+		root.log = logger.WithName("generate-tool")
 
 		return nil
 	}
 	root.Command.AddCommand(
 		generateVariableObject(root),
 		generateLocalObject(root),
+		generateMain(root),
 	)
 
 	return root

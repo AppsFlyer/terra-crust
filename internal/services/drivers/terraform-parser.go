@@ -50,7 +50,10 @@ func (p *TerraformParser) Parse(path string) (map[string]*types.Module, error) {
 			}
 
 			body := file.Body()
-			moduleName := strings.Split(path, "/")[1]
+			splittedPath := strings.Split(path, "/")
+			//Extracting module name based on folder file location
+			moduleName := splittedPath[len(splittedPath)-2]
+
 			if _, ok := modulesMap[moduleName]; !ok {
 				modulesMap[moduleName] = &types.Module{
 					Variables: make([]*types.Variable, 0),

@@ -8,12 +8,12 @@ locals{ {{range $moduleName,$moduleData := .Module}}
 {{define "simple_local_var"}} {{$moduleName := .VariableName}} {{range $localName,$localValue := .ModuleData}}
 {{$localName}} = coalesce(var.{{$moduleName}}.{{$localName}},{{$localValue}}) {{end}}{{end}}
 
-{{define "typeMapLocalBlock"}} {{$moduleData := .ModuleData}} {{$moduleName := .ModuleName}}{{range $complexKey,$complexKeyValue :=  $moduleData.MapLocals}}
-{{$complexKey}} = var.{{$moduleName}}.{{$complexKey}} != null ? merge(var.{{$moduleName}}.{{$complexKey}},
-tomap({ {{range $propertyName, $propertyValue := $complexKeyValue}}
-{{$propertyName}} = contains(keys(var.{{$moduleName}}.{{$complexKey}}),{{$propertyName}}) != false ? var.{{$moduleName}}.{{$complexKey}}[{{$propertyName}}] : {{$propertyValue}}{{end}}}
+{{define "typeMapLocalBlock"}} {{$moduleData := .ModuleData}} {{$moduleName := .ModuleName}}{{range $mapKey,$mapValue :=  $moduleData.MapLocals}}
+{{$mapKey}} = var.{{$moduleName}}.{{$mapKey}} != null ? merge(var.{{$moduleName}}.{{$mapKey}},
+tomap({ {{range $propertyName, $propertyValue := $mapValue}}
+{{$propertyName}} = contains(keys(var.{{$moduleName}}.{{$mapKey}}),{{$propertyName}}) != false ? var.{{$moduleName}}.{{$mapKey}}[{{$propertyName}}] : {{$propertyValue}}{{end}}}
 )):{
-{{range $name, $value := $complexKeyValue}} {{$name}} = {{$value}}
+{{range $name, $value := $mapValue}} {{$name}} = {{$value}}
 {{end}}} {{end}}
 {{end}}
 
