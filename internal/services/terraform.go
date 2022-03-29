@@ -205,18 +205,13 @@ func (t *Terraform) WriteTemplateToFile(fileName, templatePath, destinationPath 
 		return err
 	}
 
-	fmt.Printf("template name : %s , template path : %s destination path:%s \n", templateName, templatePath, destinationPath)
-	fmt.Printf("out : %+v  \n", out)
 	buf := new(bytes.Buffer)
 	if err = tmpl.Execute(buf, out); err != nil {
-		fmt.Println("execute err")
 		return err
 	}
-	fmt.Println("testetset")
 
 	filePath := fmt.Sprintf("%s/%s", destinationPath, fileName)
 	if err := os.Remove(filePath); (err != nil) && (!errors.Is(err, os.ErrNotExist)) {
-		fmt.Println("rm err")
 		return err
 	}
 
