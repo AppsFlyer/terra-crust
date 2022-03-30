@@ -3,11 +3,11 @@
 module {{$moduleName}} {
   source = "{{$rootFolderPath}}/{{$moduleName}}"
   # Dependency Injection - Required Fields
-
   {{range $varName,$varValue :=  $moduleData.RequiredFields}}
   # {{$varName}} = module. TODO: Add Required Field {{end}}
-
-  # Configurable Variables - Optinal Fields
+  # Configurable Variables - Optinal Fields 
   {{range $mapName,$mapProperties :=  $moduleData.ModuleData.MapLocals}}
+  {{$mapName}} = local.{{$moduleName}}.{{$mapName}} {{end}}
+  {{range $mapName,$mapProperties :=  $moduleData.ModuleData.SimpleLocals}}
   {{$mapName}} = local.{{$moduleName}}.{{$mapName}} {{end}}
 }{{end}}
