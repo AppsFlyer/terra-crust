@@ -60,7 +60,7 @@ func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPat
 		}
 	}
 
-	return t.WriteTemplateToFile("variables.tf", t.objectTemplatePath, destinationPath, out)
+	return t.WriteTemplateToFile("module_variables.tf", t.objectTemplatePath, destinationPath, out)
 }
 
 func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath string) error {
@@ -126,7 +126,7 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 		}
 	}
 
-	return t.WriteTemplateToFile("locals.tf", t.localsTemplatePath, destinationPath, out)
+	return t.WriteTemplateToFile("module_locals.tf", t.localsTemplatePath, destinationPath, out)
 }
 
 // func (t *Terraform) getVariableDetails(rawVariableData string) (string, string, error) {
@@ -193,7 +193,7 @@ func (t *Terraform) GenerateMain(modulesFilePath, destinationPath string) error 
 			}
 		}
 	}
-	return t.WriteTemplateToFile("main.tf", t.mainTemplatePath, destinationPath, out)
+	return t.WriteTemplateToFile("module_main.tf", t.mainTemplatePath, destinationPath, out)
 }
 
 func (t *Terraform) WriteTemplateToFile(fileName, templatePath, destinationPath string, out interface{}) error {
