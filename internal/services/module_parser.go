@@ -21,7 +21,6 @@ func (p *ModuleParser) GetModulesList(rootFolder string) (map[string]*types.Modu
 	modulesList, err := p.parsingDriver.Parse(rootFolder)
 	if err != nil {
 		fmt.Println("failed to parse", err.Error())
-
 		return nil, err
 	}
 

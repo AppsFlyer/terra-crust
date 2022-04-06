@@ -8,7 +8,6 @@ import (
 )
 
 func main() {
-
 	driver := drivers.NewTerraformParser()
 	parser := services.NewParser(driver)
 
