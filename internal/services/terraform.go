@@ -96,13 +96,13 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 
 				splittedRawString := strings.Split(rawDefault, "\n")
 
-				seperator := "="
+				separator := "="
 				if strings.Contains(rawDefault, ":") {
-					seperator = ":"
+					separator = ":"
 				}
 
 				for i := range splittedRawString {
-					rawDataString := strings.Split(splittedRawString[i], seperator)
+					rawDataString := strings.Split(splittedRawString[i], separator)
 					propertyName := strings.TrimSpace(rawDataString[0])
 
 					propertyValue := strings.TrimSpace(strings.Join(rawDataString[1:], ":"))
@@ -125,7 +125,6 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 			}
 		}
 	}
-
 	return t.WriteTemplateToFile("module_locals.tf", t.localsTemplatePath, destinationPath, out)
 }
 
@@ -172,12 +171,12 @@ func (t *Terraform) GenerateMain(modulesFilePath, destinationPath string) error 
 
 				splittedRawString := strings.Split(rawDefault, "\n")
 
-				seperator := "="
+				separator := "="
 				if strings.Contains(rawDefault, ":") {
-					seperator = ":"
+					separator = ":"
 				}
 				for i := range splittedRawString {
-					rawDataString := strings.Split(splittedRawString[i], seperator)
+					rawDataString := strings.Split(splittedRawString[i], separator)
 					propertyName := strings.TrimSpace(rawDataString[0])
 					if _, ok := out.Module[k].MapLocals[v.Name]; !ok {
 						out.Module[k].MapLocals[v.Name] = make(templates.ComplexVariableData)
@@ -201,7 +200,7 @@ func (t *Terraform) WriteTemplateToFile(fileName, templatePath, destinationPath 
 	templateName := splittedPath[len(splittedPath)-1]
 	tmpl, err := template.New(templateName).Funcs(funcMap).ParseFiles(templatePath)
 	if err != nil {
-		fmt.Println(err.Error())
+		//fmt.Println(err.Error()) TODO: add logger
 		return err
 	}
 
@@ -223,7 +222,6 @@ func (t *Terraform) WriteTemplateToFile(fileName, templatePath, destinationPath 
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-
 	return nil
 }
 
