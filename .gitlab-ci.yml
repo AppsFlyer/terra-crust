@@ -69,7 +69,7 @@ upload-artifactory:
     - version
     - build
   script:
-    - ARTIFACTORY_CREDENTIALS=$(curl -sS -H "X-Vault-Token:${VAULT_TOKEN}" -L https://vault.appsflyer.com/v1/secret/af_deployment | jq --raw-output .data.user,.data.password |  tr "\n" " " | awk {'print $1":"$2'})
+    - ARTIFACTORY_CREDENTIALS=$(curl -sS -H "X-Vault-Token:${VAULT_TOKEN}" -L https://vault.appsflyer.com/v1/secret/af_deployment | jq --raw-output .data.user,.data.old_password |  tr "\n" " " | awk {'print $1":"$2'})
     - VERSION=$(cat .next-version); echo ${VERSION}
     - curl --fail --user "${ARTIFACTORY_CREDENTIALS}" --request PUT "https://artifactory.appsflyer.com/artifactory/local-generic-realplatform/${ARTIFACT_NAME_PREFIX}/${ARTIFACT_NAME_PREFIX}_${VERSION}.tar.gz" --upload-file "${ARTIFACT_NAME_PREFIX}_${VERSION}.tar.gz"
     - curl --fail --user "${ARTIFACTORY_CREDENTIALS}" --request PUT "https://artifactory.appsflyer.com/artifactory/api/storage/local-generic-realplatform/${ARTIFACT_NAME_PREFIX}/${ARTIFACT_NAME_PREFIX}_${VERSION}.tar.gz?properties=COMMIT_SHORT_SHA=${CI_COMMIT_SHORT_SHA};PIPELINE_URL=${CI_PIPELINE_URL};BUILD_ID=${CI_BUILD_ID};SOURCE=${CI_PROJECT_URL};BRANCH=${CI_COMMIT_REF_NAME};COMMITTER=${GITLAB_USER_NAME};VERSION=${VERSION}"
