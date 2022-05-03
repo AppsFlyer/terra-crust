@@ -1,7 +1,6 @@
 package drivers
 
 import (
-	"errors"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -24,10 +23,6 @@ func NewTerraformParser() Parser {
 
 // Parse parses a local terraform module and returns module structs
 func (p *TerraformParser) Parse(path string) (map[string]*types.Module, error) {
-	if !(strings.HasPrefix(path, "./") || strings.HasPrefix(path, "../")) {
-		return nil, errors.New("Invalid local module path.")
-	}
-
 	modulesMap := make(map[string]*types.Module)
 	err := filepath.Walk(path,
 		func(path string, info os.FileInfo, err error) error {
