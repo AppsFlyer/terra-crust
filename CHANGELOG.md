@@ -2,6 +2,15 @@
 
 <!--- next entry here -->
 
+## 0.1.1
+2022-05-08
+
+### Fixes
+
+- fixing lint (ff8bedd12abc1b7edd6bc1d19af38436f7f16175)
+- fixing lint (399ec2ed03a622243a5e75e3af74375f9f0f97fc)
+- fixing lint (9783e2feb5ee36b2604efb877490ba422e7e6232)
+
 ## 0.1.0
 2022-05-08
 
