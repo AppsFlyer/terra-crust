@@ -252,11 +252,11 @@ func SimpleWrap(moduleName string, moduleData map[string]string) map[string]inte
 
 func GetDefaults(moduleName string, modulesMap *templates.MainModuleTF) string {
 	var sb strings.Builder
-	for k, _ := range modulesMap.Module[moduleName].SimpleLocals {
+	for k := range modulesMap.Module[moduleName].SimpleLocals {
 		sb.WriteString(fmt.Sprintf("%s = local.%s.%s \n", k, moduleName, k))
 	}
 
-	for k, _ := range modulesMap.Module[moduleName].MapLocals {
+	for k := range modulesMap.Module[moduleName].MapLocals {
 		sb.WriteString(fmt.Sprintf("%s = local.%s.%s \n", k, moduleName, k))
 	}
 	return sb.String()

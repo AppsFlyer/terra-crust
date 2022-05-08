@@ -100,6 +100,7 @@ func (p *TerraformParser) parseVariable(block *hclwrite.Block) *types.Variable {
 			variable.Description = description[2 : len(description)-1]
 		}
 	}
+
 	return &variable
 }
 
@@ -113,15 +114,14 @@ func (p *TerraformParser) parseOutput(block *hclwrite.Block) *types.Output {
 		switch k {
 		case "value":
 			var typeTokens hclwrite.Tokens
-			for _, t := range v.Expr().BuildTokens(nil) {
-				typeTokens = append(typeTokens, t)
-			}
+			typeTokens = append(typeTokens, v.Expr().BuildTokens(nil)...)
 			output.Value = typeTokens
 		case "description":
 			description := string(v.Expr().BuildTokens(nil).Bytes())
 			output.Description = description[2 : len(description)-1]
 		}
 	}
+
 	return &output
 }
 
@@ -130,5 +130,6 @@ func (p *TerraformParser) parseResource(block *hclwrite.Block) *types.Resource {
 		Type: block.Labels()[0],
 		Name: block.Labels()[1],
 	}
+
 	return &resource
 }
