@@ -16,6 +16,8 @@ const moduleDescription = `<<EOT
 	[Readme](https://gitlab.appsflyer.com/real-time-platform/af-rti-iac/modules/strimzi/-/blob/master/terraform/modules/%s/README.md)
 	EOT`
 
+const main_default_var_row_template = "%s = local.%s.%s \n"
+
 type Terraform struct {
 	parser             *ModuleParser
 	localsTemplatePath string
@@ -125,6 +127,7 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 			}
 		}
 	}
+
 	return t.WriteTemplateToFile("module_locals.tf", t.localsTemplatePath, destinationPath, out)
 }
 
@@ -227,6 +230,7 @@ func (t *Terraform) WriteTemplateToFile(fileName, templatePath, destinationPath 
 	if err != nil {
 		fmt.Println(err.Error())
 	}
+
 	return nil
 }
 
@@ -253,11 +257,12 @@ func SimpleWrap(moduleName string, moduleData map[string]string) map[string]inte
 func GetDefaults(moduleName string, modulesMap *templates.MainModuleTF) string {
 	var sb strings.Builder
 	for k := range modulesMap.Module[moduleName].SimpleLocals {
-		sb.WriteString(fmt.Sprintf("%s = local.%s.%s \n", k, moduleName, k))
+		sb.WriteString(fmt.Sprintf(main_default_var_row_template, k, moduleName, k))
 	}
 
 	for k := range modulesMap.Module[moduleName].MapLocals {
-		sb.WriteString(fmt.Sprintf("%s = local.%s.%s \n", k, moduleName, k))
+		sb.WriteString(fmt.Sprintf(main_default_var_row_template, k, moduleName, k))
 	}
+
 	return sb.String()
 }
