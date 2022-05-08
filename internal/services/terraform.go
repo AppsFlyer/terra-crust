@@ -132,7 +132,7 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 
 // }
 
-func (t *Terraform) GenerateMain(modulesFilePath, destinationPath string) error {
+func (t *Terraform) GenerateMain(modulesFilePath, destinationPath, mainTemplatePath string) error {
 	moduleList, err := t.parser.GetModulesList(modulesFilePath)
 	if err != nil {
 		return err
@@ -192,7 +192,12 @@ func (t *Terraform) GenerateMain(modulesFilePath, destinationPath string) error 
 			}
 		}
 	}
-	return t.WriteTemplateToFile("module_main.tf", t.mainTemplatePath, destinationPath, out)
+	path := t.mainTemplatePath
+	if mainTemplatePath != "" {
+		path = mainTemplatePath
+	}
+
+	return t.WriteTemplateToFile("module_main.tf", path, destinationPath, out)
 }
 
 func (t *Terraform) WriteTemplateToFile(fileName, templatePath, destinationPath string, out interface{}) error {
@@ -228,6 +233,7 @@ func (t *Terraform) WriteTemplateToFile(fileName, templatePath, destinationPath 
 var funcMap = template.FuncMap{
 	"SimpleWrap":        SimpleWrap,
 	"ModuleDataWrapper": ModuleDataWrapper,
+	"GetDefaults":       GetDefaults,
 }
 
 func ModuleDataWrapper(moduleName string, moduleData templates.ModuleData) map[string]interface{} {
@@ -242,4 +248,16 @@ func SimpleWrap(moduleName string, moduleData map[string]string) map[string]inte
 		"ModuleData":   moduleData,
 		"VariableName": moduleName,
 	}
+}
+
+func GetDefaults(moduleName string, modulesMap *templates.MainModuleTF) string {
+	var sb strings.Builder
+	for k, _ := range modulesMap.Module[moduleName].SimpleLocals {
+		sb.WriteString(fmt.Sprintf("%s = local.%s.%s \n", k, moduleName, k))
+	}
+
+	for k, _ := range modulesMap.Module[moduleName].MapLocals {
+		sb.WriteString(fmt.Sprintf("%s = local.%s.%s \n", k, moduleName, k))
+	}
+	return sb.String()
 }
