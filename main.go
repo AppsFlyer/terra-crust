@@ -22,7 +22,7 @@ func main() {
 		fmt.Println(err.Error())
 	}
 
-	if err := terraform.GenerateMain("./modules", "."); err != nil {
+	if err := terraform.GenerateMain("./modules", ".", ""); err != nil {
 		fmt.Println(err.Error())
 	}
 }
