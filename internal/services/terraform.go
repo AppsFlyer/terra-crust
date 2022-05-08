@@ -229,7 +229,7 @@ func (t *Terraform) WriteTemplateToFile(fileName, templatePath, destinationPath 
 
 	_, err = file.WriteString(buf.String())
 	if err != nil {
-		fmt.Println(err.Error())
+		return err
 	}
 
 	return nil
