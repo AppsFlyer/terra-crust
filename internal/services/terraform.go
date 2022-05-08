@@ -122,6 +122,7 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 					}
 
 					out.Module[k].MapLocals[v.Name][propertyName] = propertyValue
+
 					continue
 				}
 			}
@@ -206,7 +207,7 @@ func (t *Terraform) GenerateMain(modulesFilePath, destinationPath, mainTemplateP
 func (t *Terraform) WriteTemplateToFile(fileName, templatePath, destinationPath string, out interface{}) error {
 	splittedPath := strings.Split(templatePath, "/")
 	templateName := splittedPath[len(splittedPath)-1]
-	tmpl, err := template.New(templateName).Funcs(funcMap).ParseFiles(templatePath)
+	tmpl, err := template.New(templateName).Funcs(NewTemplateApi().ApiFuncMap).ParseFiles(templatePath)
 	if err != nil {
 		//fmt.Println(err.Error()) TODO: add logger
 		return err
@@ -232,37 +233,4 @@ func (t *Terraform) WriteTemplateToFile(fileName, templatePath, destinationPath 
 	}
 
 	return nil
-}
-
-var funcMap = template.FuncMap{
-	"SimpleWrap":        SimpleWrap,
-	"ModuleDataWrapper": ModuleDataWrapper,
-	"GetDefaults":       GetDefaults,
-}
-
-func ModuleDataWrapper(moduleName string, moduleData templates.ModuleData) map[string]interface{} {
-	return map[string]interface{}{
-		"ModuleName": moduleName,
-		"ModuleData": moduleData,
-	}
-}
-
-func SimpleWrap(moduleName string, moduleData map[string]string) map[string]interface{} {
-	return map[string]interface{}{
-		"ModuleData":   moduleData,
-		"VariableName": moduleName,
-	}
-}
-
-func GetDefaults(moduleName string, modulesMap *templates.MainModuleTF) string {
-	var sb strings.Builder
-	for k := range modulesMap.Module[moduleName].SimpleLocals {
-		sb.WriteString(fmt.Sprintf(main_default_var_row_template, k, moduleName, k))
-	}
-
-	for k := range modulesMap.Module[moduleName].MapLocals {
-		sb.WriteString(fmt.Sprintf(main_default_var_row_template, k, moduleName, k))
-	}
-
-	return sb.String()
 }
