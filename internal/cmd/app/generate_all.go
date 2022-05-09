@@ -33,6 +33,7 @@ func generateAllFiles(root *RootCommand) *cobra.Command {
 
 				return err
 			}
+
 			return nil
 		},
 	}
