@@ -29,6 +29,7 @@ func NewRootCommand(logger logger.Logger) *RootCommand {
 		generateVariableObject(root),
 		generateLocalObject(root),
 		generateMain(root),
+		generateAllFiles(root),
 	)
 
 	return root
