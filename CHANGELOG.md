@@ -2,6 +2,17 @@
 
 <!--- next entry here -->
 
+## 0.2.0
+2022-05-09
+
+### Features
+
+- added create all files (7c78318cc2db42b5a1cebc4d6d356675b01f5cf8)
+
+### Fixes
+
+- fixing lint (0377f97e67db9871008936b76ef6c56c2c7c4680)
+
 ## 0.1.1
 2022-05-08
 
