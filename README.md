@@ -13,18 +13,18 @@ Using Drivers design for everything that is 3rd party such as consul and kafka-m
 
 ## Commands:
 ### Create Main:
-go run main.go terraform-main --destination-path="." --source-path="/Users/osherelmakaies/go/src/terraform-submodule-wrapper/modules"
+`go run main.go terraform-main --destination-path="." --source-path="/Users/osherelmakaies/go/src/terraform-submodule-wrapper/modules"`
 
 * Main has additional flag: ```main-template-path``` to support external main templates like in examples/templates/main.tf.tmpl
 
 ### Create Variables:
-go run main.go terraform-variables --destination-path="." --source-path="/Users/osherelmakaies/go/src/terraform-submodule-wrapper/modules"
+`go run main.go terraform-variables --destination-path="." --source-path="/Users/osherelmakaies/go/src/terraform-submodule-wrapper/modules"`
 
 ### Create Locals:
-go run main.go terraform-locals --destination-path="." --source-path="/Users/osherelmakaies/go/src/terraform-submodule-wrapper/modules"
+`go run main.go terraform-locals --destination-path="." --source-path="/Users/osherelmakaies/go/src/terraform-submodule-wrapper/modules"`
 
 ### Create All:
-go run main.go terraform-all --destination-path="." --source-path="/Users/osherelmakaies/go/src/terraform-submodule-wrapper/modules"
+`go run main.go terraform-all --destination-path="." --source-path="/Users/osherelmakaies/go/src/terraform-submodule-wrapper/modules"`
 * same as Main has additional flag: ```main-template-path``` to support external main templates like in examples/templates/main.tf.tmpl
 
 ## Contribution
