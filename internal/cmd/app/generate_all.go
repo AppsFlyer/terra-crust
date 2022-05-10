@@ -9,7 +9,7 @@ func generateAllFiles(root *RootCommand) *cobra.Command {
 	var flags types.TFGenerateFlags = types.TFGenerateFlags{}
 	cmd := &cobra.Command{
 		Use:     "terraform-all",
-		Short:   "create general object terraform main file",
+		Short:   "generate terraform locals , main and variables",
 		Example: "",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			log := root.log.WithName("generate-all-files")

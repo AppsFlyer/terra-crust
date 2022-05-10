@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 	"text/template"
 
@@ -209,7 +210,6 @@ func (t *Terraform) WriteTemplateToFile(fileName, templatePath, destinationPath 
 	templateName := splittedPath[len(splittedPath)-1]
 	tmpl, err := template.New(templateName).Funcs(NewTemplateApi().ApiFuncMap).ParseFiles(templatePath)
 	if err != nil {
-		//fmt.Println(err.Error()) TODO: add logger
 		return err
 	}
 
@@ -229,6 +229,12 @@ func (t *Terraform) WriteTemplateToFile(fileName, templatePath, destinationPath 
 
 	_, err = file.WriteString(buf.String())
 	if err != nil {
+		return err
+	}
+
+	cmd := exec.Command("terraform", "fmt")
+	cmd.Dir = destinationPath
+	if err := cmd.Run(); err != nil {
 		return err
 	}
 
