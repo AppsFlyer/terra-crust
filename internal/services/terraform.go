@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 	"text/template"
 
@@ -229,6 +230,12 @@ func (t *Terraform) WriteTemplateToFile(fileName, templatePath, destinationPath 
 
 	_, err = file.WriteString(buf.String())
 	if err != nil {
+		return err
+	}
+
+	cmd := exec.Command("terraform", "fmt")
+	cmd.Dir = destinationPath
+	if err := cmd.Run(); err != nil {
 		return err
 	}
 
