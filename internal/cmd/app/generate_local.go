@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/spf13/cobra"
+
 	"gitlab.appsflyer.com/real-time-platform/terraform-submodule-wrapper/internal/cmd/types"
 )
 
