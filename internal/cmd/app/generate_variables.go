@@ -28,11 +28,11 @@ func generateVariableObject(root *RootCommand) *cobra.Command {
 
 	cmd.Flags().StringVar(&flags.SourcePath, "source-path", "", "Required: General module folder path that contains all the sub modules flattened")
 	cmd.Flags().StringVar(&flags.DestinationPath, "destination-path", "", "Required: Destination path to write the new terraform file")
-	if err := cmd.MarkFlagRequired("destination-path"); err != nil {
-		root.log.ErrorWithError("failed to set required flag on destination-path", err)
-	}
 	if err := cmd.MarkFlagRequired("source-path"); err != nil {
 		root.log.ErrorWithError("failed to set required flag on source-path", err)
+	}
+	if err := cmd.MarkFlagRequired("destination-path"); err != nil {
+		root.log.ErrorWithError("failed to set required flag on destination-path", err)
 	}
 
 	return cmd
