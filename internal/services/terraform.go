@@ -210,7 +210,6 @@ func (t *Terraform) WriteTemplateToFile(fileName, templatePath, destinationPath 
 	templateName := splittedPath[len(splittedPath)-1]
 	tmpl, err := template.New(templateName).Funcs(NewTemplateApi().ApiFuncMap).ParseFiles(templatePath)
 	if err != nil {
-		//fmt.Println(err.Error()) TODO: add logger
 		return err
 	}
 
