@@ -2,6 +2,19 @@
 
 <!--- next entry here -->
 
+## 0.3.0
+2022-05-10
+
+### Features
+
+- added terraform fmt (caac04aefd98832511b596ff239db3c85f682adb)
+
+### Fixes
+
+- fix lint (a51890db40c01361579a966b568ab1bdd62388b7)
+- lint (1d78be67b57d90663e09121090d5c54afec63b21)
+- test (a8e12689d89e78482db94dfa18adf02d2f1af78f)
+
 ## 0.2.0
 2022-05-09
 
