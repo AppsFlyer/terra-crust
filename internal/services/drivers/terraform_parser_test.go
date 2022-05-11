@@ -4,6 +4,7 @@ import "testing"
 
 func TestParse(t *testing.T) {
 	parser := NewTerraformParser()
+
 	m, err := parser.Parse("../../../mock/modules")
 	if err != nil {
 		t.Errorf("failed to parse , reason: %s", err.Error())
@@ -24,6 +25,7 @@ func TestParse(t *testing.T) {
 
 func TestParseBadPath(t *testing.T) {
 	parser := NewTerraformParser()
+
 	m, err := parser.Parse("../../../internal")
 	if err != nil {
 		t.Errorf("failed to parse , reason: %s", err.Error())
@@ -36,6 +38,7 @@ func TestParseBadPath(t *testing.T) {
 
 func TestParseNotExistingPath(t *testing.T) {
 	parser := NewTerraformParser()
+
 	_, err := parser.Parse("../../internal")
 	if err == nil {
 		t.Errorf("Expected error for bad route")
