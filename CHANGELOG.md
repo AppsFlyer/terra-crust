@@ -2,6 +2,13 @@
 
 <!--- next entry here -->
 
+## 0.4.0
+2022-05-11
+
+### Features
+
+- added tests (381d5458daf1f2d063e042c8edf2607043f3f515)
+
 ## 0.3.0
 2022-05-10
 
