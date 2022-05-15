@@ -1,9 +1,14 @@
-package drivers
+package drivers_test
 
-import "testing"
+import (
+	"testing"
+
+	"gitlab.appsflyer.com/real-time-platform/terraform-submodule-wrapper/internal/services/drivers"
+)
 
 func TestParse(t *testing.T) {
-	parser := NewTerraformParser()
+	t.Parallel()
+	parser := drivers.NewTerraformParser()
 
 	m, err := parser.Parse("../../../mock/modules")
 	if err != nil {
@@ -24,7 +29,8 @@ func TestParse(t *testing.T) {
 }
 
 func TestParseBadPath(t *testing.T) {
-	parser := NewTerraformParser()
+	t.Parallel()
+	parser := drivers.NewTerraformParser()
 
 	m, err := parser.Parse("../../../internal")
 	if err != nil {
@@ -37,7 +43,8 @@ func TestParseBadPath(t *testing.T) {
 }
 
 func TestParseNotExistingPath(t *testing.T) {
-	parser := NewTerraformParser()
+	t.Parallel()
+	parser := drivers.NewTerraformParser()
 
 	_, err := parser.Parse("../../internal")
 	if err == nil {
