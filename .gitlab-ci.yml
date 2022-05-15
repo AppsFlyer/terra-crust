@@ -6,7 +6,7 @@
   export PATH=/usr/local/go/bin:$GOPATH/bin:$PATH
 
 variables:
-  ARTIFACT_NAME_PREFIX: "terraform_submodel_wrapper"
+  ARTIFACT_NAME_PREFIX: "terra-crust"
   LIST_OF_PATHS_TO_INCLUDE_IN_ARCHIVE: "main ./internal"
   GOLANGCI_LINT_VERSION: "v1.41.1"
   GOLANG_IMAGE_TAG: "1.16.4-alpine"
