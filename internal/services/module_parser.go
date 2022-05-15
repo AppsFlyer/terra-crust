@@ -1,8 +1,8 @@
 package services
 
 import (
-	"gitlab.appsflyer.com/real-time-platform/terraform-submodule-wrapper/internal/services/drivers"
-	"gitlab.appsflyer.com/real-time-platform/terraform-submodule-wrapper/internal/types"
+	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/services/drivers"
+	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/types"
 )
 
 type ModuleParser struct {
