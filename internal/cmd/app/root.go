@@ -25,9 +25,12 @@ func NewRootCommand(logger logger.Logger) *RootCommand {
 
 		return nil
 	}
+
+	svc := InitTerraformGeneratorService(root.log)
+
 	root.Command.AddCommand(
-		generateVariableObject(root),
-		generateLocalObject(root),
+		generateTerraformFile(root, svc.GenerateModuleDefaultLocals, "terraform-locals"),
+		generateTerraformFile(root, svc.GenerateModuleVariableObject, "terraform-variable"),
 		generateMain(root),
 		generateAllFiles(root),
 	)
