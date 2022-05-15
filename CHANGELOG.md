@@ -2,6 +2,13 @@
 
 <!--- next entry here -->
 
+## 0.1.1
+2022-05-15
+
+### Fixes
+
+- fixed artifact name (1d54d6ae87277b35e404d7551bcce292c71ffd58)
+
 ## 0.1.0
 2022-05-15
 
