@@ -1,4 +1,4 @@
-# Terraform Sub Module Wrapper
+# Terra Crust
 
 Sub module wrapper was created after encountering major issue in terraform which is not solved, terraform best practice is to create a flat hierchy but thats create a problem when we want to export the new module as a single module, terraform wrapper generate module out of folder of modules wrap them all under a single terraform module, exporting the variables of any type including maps and regular defaults supporting in the ability to create:
 * local file - create module_local.tf that export all of the locals of each sub module.
