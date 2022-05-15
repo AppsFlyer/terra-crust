@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"gitlab.appsflyer.com/real-time-platform/terraform-submodule-wrapper/internal/cmd/types"
+	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/cmd/types"
 )
 
 func generateTerraformFile(root *RootCommand, f func(modulesFilePath string, destinationPath string) error, short string) *cobra.Command {

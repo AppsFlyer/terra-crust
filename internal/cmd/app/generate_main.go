@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/spf13/cobra"
-	"gitlab.appsflyer.com/real-time-platform/terraform-submodule-wrapper/internal/cmd/types"
+	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/cmd/types"
 )
 
 func generateMain(root *RootCommand) *cobra.Command {

@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/zclconf/go-cty/cty"
-	"gitlab.appsflyer.com/real-time-platform/terraform-submodule-wrapper/internal/types"
+	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/types"
 )
 
 type TerraformParser struct {

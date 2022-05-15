@@ -3,7 +3,7 @@ package drivers_test
 import (
 	"testing"
 
-	"gitlab.appsflyer.com/real-time-platform/terraform-submodule-wrapper/internal/services/drivers"
+	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/services/drivers"
 )
 
 func TestParse(t *testing.T) {

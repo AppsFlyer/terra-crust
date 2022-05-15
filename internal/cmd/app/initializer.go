@@ -2,8 +2,8 @@ package app
 
 import (
 	logger "gitlab.appsflyer.com/go/af-go-logger/v1"
-	"gitlab.appsflyer.com/real-time-platform/terraform-submodule-wrapper/internal/services"
-	"gitlab.appsflyer.com/real-time-platform/terraform-submodule-wrapper/internal/services/drivers"
+	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/services"
+	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/services/drivers"
 )
 
 func InitTerraformGeneratorService(log logger.Logger) *services.Terraform {
