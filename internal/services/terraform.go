@@ -1,15 +1,10 @@
 package services
 
 import (
-	"bytes"
-	"errors"
 	"fmt"
-	"os"
-	"os/exec"
 	"strings"
-	"text/template"
 
-	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/templates"
+	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/services/templates"
 )
 
 const moduleDescription = `<<EOT
@@ -21,17 +16,19 @@ const main_default_var_row_template = "%s = local.%s.%s \n"
 
 type Terraform struct {
 	parser             *ModuleParser
+	templateHandler    *TemplateHandler
 	localsTemplatePath string
 	objectTemplatePath string
 	mainTemplatePath   string
 }
 
-func NewTerraform(parser *ModuleParser, localsTemplatePath, objectTemplatePath, mainTemplatePath string) *Terraform {
+func NewTerraform(parser *ModuleParser, templateHandler *TemplateHandler, localsTemplatePath, objectTemplatePath, mainTemplatePath string) *Terraform {
 	return &Terraform{
 		parser:             parser,
 		localsTemplatePath: localsTemplatePath,
 		objectTemplatePath: objectTemplatePath,
 		mainTemplatePath:   mainTemplatePath,
+		templateHandler:    templateHandler,
 	}
 }
 
@@ -63,7 +60,7 @@ func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPat
 		}
 	}
 
-	return t.WriteTemplateToFile("module_variables.tf", t.objectTemplatePath, destinationPath, out)
+	return t.templateHandler.WriteTemplateToFile("module_variables.tf", t.objectTemplatePath, destinationPath, out, true)
 }
 
 func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath string) error {
@@ -130,12 +127,8 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 		}
 	}
 
-	return t.WriteTemplateToFile("module_locals.tf", t.localsTemplatePath, destinationPath, out)
+	return t.templateHandler.WriteTemplateToFile("module_locals.tf", t.localsTemplatePath, destinationPath, out, true)
 }
-
-// func (t *Terraform) getVariableDetails(rawVariableData string) (string, string, error) {
-
-// }
 
 func (t *Terraform) GenerateMain(modulesFilePath, destinationPath, mainTemplatePath string) error {
 	moduleList, err := t.parser.GetModulesList(modulesFilePath)
@@ -202,41 +195,5 @@ func (t *Terraform) GenerateMain(modulesFilePath, destinationPath, mainTemplateP
 		path = mainTemplatePath
 	}
 
-	return t.WriteTemplateToFile("module_main.tf", path, destinationPath, out)
-}
-
-func (t *Terraform) WriteTemplateToFile(fileName, templatePath, destinationPath string, out interface{}) error {
-	splittedPath := strings.Split(templatePath, "/")
-	templateName := splittedPath[len(splittedPath)-1]
-	tmpl, err := template.New(templateName).Funcs(NewTemplateApi().ApiFuncMap).ParseFiles(templatePath)
-	if err != nil {
-		return err
-	}
-
-	buf := new(bytes.Buffer)
-	if err = tmpl.Execute(buf, out); err != nil {
-		return err
-	}
-
-	filePath := fmt.Sprintf("%s/%s", destinationPath, fileName)
-	if err := os.Remove(filePath); (err != nil) && (!errors.Is(err, os.ErrNotExist)) {
-		return err
-	}
-
-	file, _ := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-
-	defer file.Close()
-
-	_, err = file.WriteString(buf.String())
-	if err != nil {
-		return err
-	}
-
-	cmd := exec.Command("terraform", "fmt")
-	cmd.Dir = destinationPath
-	if err := cmd.Run(); err != nil {
-		return err
-	}
-
-	return nil
+	return t.templateHandler.WriteTemplateToFile("module_main.tf", path, destinationPath, out, true)
 }

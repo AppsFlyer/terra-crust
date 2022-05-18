@@ -5,7 +5,7 @@ import (
 	"strings"
 	"text/template"
 
-	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/templates"
+	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/services/templates"
 )
 
 type TemplateApi struct {
