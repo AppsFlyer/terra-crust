@@ -2,6 +2,13 @@
 
 <!--- next entry here -->
 
+## 0.1.2
+2022-05-18
+
+### Fixes
+
+- fixing copy of config (4302ee3799b8405ea8782711f36d10976d907513)
+
 ## 0.1.1
 2022-05-15
 
