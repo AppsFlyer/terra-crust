@@ -9,7 +9,11 @@ import (
 
 func NewConfig(logger logger.Logger) *viper.Viper {
 	v := viper.New()
-	v.AddConfigPath("./config") // path to look for the config file in
+	path := "./config"
+	if os.Getenv("CONFIG_PATH") != "" {
+		path = os.Getenv("CONFIG_PATH")
+	}
+	v.AddConfigPath(path) // path to look for the config file in
 	v.SetConfigName("production")
 	if env := os.Getenv("ENV"); env == "development" {
 		v.SetConfigName("development")
