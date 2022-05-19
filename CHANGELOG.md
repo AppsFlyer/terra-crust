@@ -2,6 +2,13 @@
 
 <!--- next entry here -->
 
+## 0.1.3
+2022-05-19
+
+### Fixes
+
+- canceling failing flow on failed terraform fmt (a470968a83ebafbf79a007751e26333ef9a78707)
+
 ## 0.1.2
 2022-05-18
 
