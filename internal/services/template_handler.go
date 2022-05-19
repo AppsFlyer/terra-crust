@@ -9,6 +9,8 @@ import (
 	"os/exec"
 	"strings"
 	"text/template"
+
+	logger "gitlab.appsflyer.com/go/af-go-logger/v1"
 )
 
 var (
@@ -17,10 +19,13 @@ var (
 )
 
 type TemplateHandler struct {
+	logger logger.Logger
 }
 
-func NewTemplateHandler() *TemplateHandler {
-	return &TemplateHandler{}
+func NewTemplateHandler(logger logger.Logger) *TemplateHandler {
+	return &TemplateHandler{
+		logger: logger,
+	}
 }
 
 func (th *TemplateHandler) WriteTemplateToFile(fileName, templatePath, destinationPath string, out interface{}, isDefaultTemplate bool) error {
@@ -50,7 +55,7 @@ func (th *TemplateHandler) WriteTemplateToFile(fileName, templatePath, destinati
 	cmd := exec.Command("terraform", "fmt")
 	cmd.Dir = destinationPath
 	if err := cmd.Run(); err != nil {
-		return err
+		th.logger.ErrorWithError("Failed running terraform fmt", err)
 	}
 
 	return nil
