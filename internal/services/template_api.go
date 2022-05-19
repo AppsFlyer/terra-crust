@@ -9,12 +9,12 @@ import (
 )
 
 type TemplateApi struct {
-	ApiFuncMap template.FuncMap
+	ApiFuncMap *template.FuncMap
 }
 
 func NewTemplateApi() *TemplateApi {
 	return &TemplateApi{
-		ApiFuncMap: template.FuncMap{
+		ApiFuncMap: &template.FuncMap{
 			"SimpleWrap":        SimpleWrap,
 			"ModuleDataWrapper": ModuleDataWrapper,
 			"GetDefaults":       GetDefaults,

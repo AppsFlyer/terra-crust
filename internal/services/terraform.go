@@ -191,9 +191,11 @@ func (t *Terraform) GenerateMain(modulesFilePath, destinationPath, mainTemplateP
 		}
 	}
 	path := t.mainTemplatePath
+	isDefault := true
 	if mainTemplatePath != "" {
 		path = mainTemplatePath
+		isDefault = false
 	}
 
-	return t.templateHandler.WriteTemplateToFile("module_main.tf", path, destinationPath, out, true)
+	return t.templateHandler.WriteTemplateToFile("module_main.tf", path, destinationPath, out, isDefault)
 }

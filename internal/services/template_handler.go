@@ -65,11 +65,12 @@ func (th *TemplateHandler) GetTemplate(templatePath string, isDefaultTemplate bo
 	splittedPath := strings.Split(templatePath, "/")
 	templateName := splittedPath[len(splittedPath)-1]
 
+	apiFunc := NewTemplateApi()
 	if isDefaultTemplate {
 		langs, _ := assets.ReadFile(fmt.Sprintf("templates/%s", templateName))
 
-		return template.New(templateName).Funcs(NewTemplateApi().ApiFuncMap).Parse(string(langs))
+		return template.New(templateName).Funcs(*apiFunc.ApiFuncMap).Parse(string(langs))
 	}
 
-	return template.New(templateName).Funcs(NewTemplateApi().ApiFuncMap).ParseFiles(templatePath)
+	return template.New(templateName).Funcs(*apiFunc.ApiFuncMap).ParseFiles(templatePath)
 }
