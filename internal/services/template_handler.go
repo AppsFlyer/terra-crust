@@ -53,13 +53,6 @@ func (th *TemplateHandler) runTerraformFmt(path string) error {
 		return err
 	}
 
-	err = tf.Init(context.Background(), tfexec.Upgrade(true))
-	if err != nil {
-		th.logger.ErrorWithError("failed running Init on terraform", err)
-
-		return err
-	}
-
 	if err := tf.FormatWrite(context.Background()); err != nil {
 		th.logger.ErrorWithError("failed running Show", err)
 
