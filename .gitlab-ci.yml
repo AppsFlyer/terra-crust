@@ -7,7 +7,7 @@
 
 variables:
   ARTIFACT_NAME_PREFIX: "terra-crust"
-  LIST_OF_PATHS_TO_INCLUDE_IN_ARCHIVE: "main ./internal/cmd/config"
+  LIST_OF_PATHS_TO_INCLUDE_IN_ARCHIVE: "./internal/cmd/ config main"
   GOLANGCI_LINT_VERSION: "v1.41.1"
   GOLANG_IMAGE_TAG: "1.16.4-alpine"
 
@@ -53,8 +53,8 @@ build:
     - *go_env_var
   script:
     - VERSION=$(cat .next-version); echo ${VERSION}
-    - GOARCH=amd64 GOOS=linux CGO_ENABLED=0 go build -ldflags '-s -w' -a -installsuffix cgo -o main ./internal/cmd/main.go
-    - ls -alh; echo "Archiving ${LIST_OF_PATHS_TO_INCLUDE_IN_ARCHIVE}"; tar -cvzf ${ARTIFACT_NAME_PREFIX}_${VERSION}.tar.gz ${LIST_OF_PATHS_TO_INCLUDE_IN_ARCHIVE}
+    - GOARCH=amd64 GOOS=linux CGO_ENABLED=0 go build -ldflags '-s -w' -a -installsuffix cgo -o ./internal/cmd/main ./internal/cmd/main.go
+    - ls -alh; echo "Archiving ${LIST_OF_PATHS_TO_INCLUDE_IN_ARCHIVE}"; tar -cvzf ${ARTIFACT_NAME_PREFIX}_${VERSION}.tar.gz -C ${LIST_OF_PATHS_TO_INCLUDE_IN_ARCHIVE}
   artifacts:
     paths:
       - "${ARTIFACT_NAME_PREFIX}_*.tar.gz"
