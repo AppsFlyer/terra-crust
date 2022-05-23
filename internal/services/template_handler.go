@@ -2,14 +2,18 @@ package services
 
 import (
 	"bytes"
+	"context"
 	"embed"
 	"errors"
 	"fmt"
 	"os"
-	"os/exec"
 	"strings"
 	"text/template"
 
+	"github.com/hashicorp/go-version"
+	"github.com/hashicorp/hc-install/product"
+	"github.com/hashicorp/hc-install/releases"
+	"github.com/hashicorp/terraform-exec/tfexec"
 	logger "gitlab.appsflyer.com/go/af-go-logger/v1"
 )
 
@@ -26,6 +30,43 @@ func NewTemplateHandler(logger logger.Logger) *TemplateHandler {
 	return &TemplateHandler{
 		logger: logger,
 	}
+}
+
+func (th *TemplateHandler) runTerraformFmt(path string) error {
+	installer := &releases.ExactVersion{
+		Product: product.Terraform,
+		Version: version.Must(version.NewVersion("1.0.6")),
+	}
+
+	execPath, err := installer.Install(context.Background())
+	if err != nil {
+		th.logger.ErrorWithError("Failed installing terraform", err)
+
+		return err
+	}
+
+	workingDir := path
+	tf, err := tfexec.NewTerraform(workingDir, execPath)
+	if err != nil {
+		th.logger.ErrorWithError("failed running NewTerraform", err)
+
+		return err
+	}
+
+	err = tf.Init(context.Background(), tfexec.Upgrade(true))
+	if err != nil {
+		th.logger.ErrorWithError("failed running Init on terraform", err)
+
+		return err
+	}
+
+	if err := tf.FormatWrite(context.Background()); err != nil {
+		th.logger.ErrorWithError("failed running Show", err)
+
+		return err
+	}
+
+	return nil
 }
 
 func (th *TemplateHandler) WriteTemplateToFile(fileName, templatePath, destinationPath string, out interface{}, isDefaultTemplate bool) error {
@@ -52,10 +93,8 @@ func (th *TemplateHandler) WriteTemplateToFile(fileName, templatePath, destinati
 		return err
 	}
 
-	cmd := exec.Command("terraform", "fmt")
-	cmd.Dir = destinationPath
-	if err := cmd.Run(); err != nil {
-		th.logger.ErrorWithError("Failed running terraform fmt", err)
+	if err := th.runTerraformFmt(destinationPath); err != nil {
+		th.logger.Errorf("Failed running terraform FMT please make sure directory is correct, or external template if provided is correct")
 	}
 
 	return nil
