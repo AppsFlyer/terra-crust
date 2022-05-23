@@ -2,6 +2,13 @@
 
 <!--- next entry here -->
 
+## 0.1.5
+2022-05-23
+
+### Fixes
+
+- removed init (84fa3b04f5c9f35a1ab415987b511c399682b2ce)
+
 ## 0.1.4
 2022-05-19
 
