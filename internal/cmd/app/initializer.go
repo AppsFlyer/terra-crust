@@ -9,10 +9,10 @@ import (
 func InitTerraformGeneratorService(log logger.Logger) *services.Terraform {
 	config := NewConfig(log)
 
-	parserDriver := drivers.NewTerraformParser()
-	parser := services.NewParser(parserDriver)
+	parserDriver := drivers.NewTerraformParser(log)
+	parser := services.NewParser(log, parserDriver)
 	templateHandler := services.NewTemplateHandler(log)
-	tfSvc := services.NewTerraform(parser, templateHandler, config.GetString("LOCALS_TEMPLATE_PATH"), config.GetString("VARIABLE_TEMPLATE_PATH"), config.GetString("MAIN_TEMPLATE_PATH"))
+	tfSvc := services.NewTerraform(log, parser, templateHandler, config.GetString("LOCALS_TEMPLATE_PATH"), config.GetString("VARIABLE_TEMPLATE_PATH"), config.GetString("MAIN_TEMPLATE_PATH"))
 
 	return tfSvc
 }

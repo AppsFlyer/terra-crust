@@ -3,12 +3,14 @@ package drivers_test
 import (
 	"testing"
 
+	logger "gitlab.appsflyer.com/go/af-go-logger/v1"
 	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/services/drivers"
 )
 
 func TestParse(t *testing.T) {
 	t.Parallel()
-	parser := drivers.NewTerraformParser()
+	log := logger.NewLogger(logger.WithName("test-log"))
+	parser := drivers.NewTerraformParser(log)
 
 	m, err := parser.Parse("../../../mock/modules")
 	if err != nil {
@@ -30,7 +32,8 @@ func TestParse(t *testing.T) {
 
 func TestParseBadPath(t *testing.T) {
 	t.Parallel()
-	parser := drivers.NewTerraformParser()
+	log := logger.NewLogger(logger.WithName("test-log"))
+	parser := drivers.NewTerraformParser(log)
 
 	m, err := parser.Parse("../../../internal")
 	if err != nil {
@@ -44,7 +47,8 @@ func TestParseBadPath(t *testing.T) {
 
 func TestParseNotExistingPath(t *testing.T) {
 	t.Parallel()
-	parser := drivers.NewTerraformParser()
+	log := logger.NewLogger(logger.WithName("test-log"))
+	parser := drivers.NewTerraformParser(log)
 
 	_, err := parser.Parse("../../internal")
 	if err == nil {

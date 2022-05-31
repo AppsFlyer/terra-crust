@@ -1,6 +1,7 @@
 package drivers
 
 import (
+	"errors"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -10,15 +11,19 @@ import (
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/zclconf/go-cty/cty"
+	log "gitlab.appsflyer.com/go/af-go-logger/v1"
 	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/types"
 )
 
 type TerraformParser struct {
+	logger log.Logger
 }
 
 // newLocalParser return a new parser with local terraform module.
-func NewTerraformParser() Parser {
-	return &TerraformParser{}
+func NewTerraformParser(logger log.Logger) Parser {
+	return &TerraformParser{
+		logger: logger,
+	}
 }
 
 // Parse parses a local terraform module and returns module structs
@@ -27,21 +32,27 @@ func (p *TerraformParser) Parse(path string) (map[string]*types.Module, error) {
 	err := filepath.Walk(path,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
+				p.logger.ErrorWithError("failed scraping folder on filepath.walk", err)
+
 				return err
 			}
 
 			if info.IsDir() || !strings.HasSuffix(info.Name(), ".tf") {
+				p.logger.ErrorWithError("Folder is empty or there is no files with .tf please make sure path is correct", err)
+
 				return nil
 			}
 
 			src, err := ioutil.ReadFile(path)
 			if err != nil {
+				p.logger.ErrorWithError("Failed reading file under path, make sure files exist", err)
+
 				return err
 			}
 
 			file, diags := hclwrite.ParseConfig(src, path, hcl.InitialPos)
 			if diags.HasErrors() {
-				return diags
+				return errors.New(diags.Error())
 			}
 
 			body := file.Body()
@@ -71,6 +82,8 @@ func (p *TerraformParser) Parse(path string) (map[string]*types.Module, error) {
 			return nil
 		})
 	if err != nil {
+		p.logger.ErrorWithError("failed on scraping root folder please make sure path is correct", err)
+
 		return nil, err
 	}
 
