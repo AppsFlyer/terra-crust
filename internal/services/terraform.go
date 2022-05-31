@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	logger "gitlab.appsflyer.com/go/af-go-logger/v1"
 	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/services/templates"
 )
 
@@ -17,15 +18,17 @@ const main_default_var_row_template = "%s = local.%s.%s \n"
 type Terraform struct {
 	parser             *ModuleParser
 	templateHandler    *TemplateHandler
+	logger             logger.Logger
 	localsTemplatePath string
 	objectTemplatePath string
 	mainTemplatePath   string
 }
 
-func NewTerraform(parser *ModuleParser, templateHandler *TemplateHandler, localsTemplatePath, objectTemplatePath, mainTemplatePath string) *Terraform {
+func NewTerraform(logger logger.Logger, parser *ModuleParser, templateHandler *TemplateHandler, localsTemplatePath, objectTemplatePath, mainTemplatePath string) *Terraform {
 	return &Terraform{
 		parser:             parser,
 		localsTemplatePath: localsTemplatePath,
+		logger:             logger,
 		objectTemplatePath: objectTemplatePath,
 		mainTemplatePath:   mainTemplatePath,
 		templateHandler:    templateHandler,
@@ -35,6 +38,8 @@ func NewTerraform(parser *ModuleParser, templateHandler *TemplateHandler, locals
 func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPath string) error {
 	moduleList, err := t.parser.GetModulesList(modulesFilePath)
 	if err != nil {
+		t.logger.ErrorWithError("Failed to get module list", err)
+
 		return err
 	}
 
@@ -66,6 +71,8 @@ func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPat
 func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath string) error {
 	moduleList, err := t.parser.GetModulesList(modulesFilePath)
 	if err != nil {
+		t.logger.ErrorWithError("Failed to get module list", err)
+
 		return err
 	}
 
@@ -133,6 +140,8 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 func (t *Terraform) GenerateMain(modulesFilePath, destinationPath, mainTemplatePath string) error {
 	moduleList, err := t.parser.GetModulesList(modulesFilePath)
 	if err != nil {
+		t.logger.ErrorWithError("Failed to get module list", err)
+
 		return err
 	}
 
@@ -163,16 +172,14 @@ func (t *Terraform) GenerateMain(modulesFilePath, destinationPath, mainTemplateP
 			//Map variable
 			if v.Default != nil && string(v.Default.Bytes()) != `""` && strings.Contains(string(v.Type.Bytes()), "map") {
 				rawDefault := string(v.Default.Bytes())
-				rawDefault = strings.ReplaceAll(rawDefault, "{", "")
-				rawDefault = strings.ReplaceAll(rawDefault, "}", "")
 				rawDefault = strings.TrimSpace(rawDefault)
-
 				splittedRawString := strings.Split(rawDefault, "\n")
 
 				separator := "="
 				if strings.Contains(rawDefault, ":") {
 					separator = ":"
 				}
+
 				for i := range splittedRawString {
 					rawDataString := strings.Split(splittedRawString[i], separator)
 					propertyName := strings.TrimSpace(rawDataString[0])
