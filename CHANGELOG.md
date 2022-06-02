@@ -2,6 +2,13 @@
 
 <!--- next entry here -->
 
+## 0.1.6
+2022-06-02
+
+### Fixes
+
+- fixing error on empty file (5ca26d0262da8c68f1aabbce00c27011c10a142f)
+
 ## 0.1.5
 2022-05-23
 
