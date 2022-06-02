@@ -38,8 +38,6 @@ func (p *TerraformParser) Parse(path string) (map[string]*types.Module, error) {
 			}
 
 			if info.IsDir() || !strings.HasSuffix(info.Name(), ".tf") {
-				p.logger.ErrorWithError("Folder is empty or there is no files with .tf please make sure path is correct", err)
-
 				return nil
 			}
 
