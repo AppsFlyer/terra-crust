@@ -1,8 +1,8 @@
 package app
 
 import (
+	"github.com/AppsFlyer/terra-crust/internal/cmd/types"
 	"github.com/spf13/cobra"
-	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/cmd/types"
 )
 
 func generateMain(root *RootCommand) *cobra.Command {

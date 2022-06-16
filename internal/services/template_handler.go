@@ -10,11 +10,11 @@ import (
 	"strings"
 	"text/template"
 
+	logger "github.com/AppsFlyer/go-logger"
 	"github.com/hashicorp/go-version"
 	"github.com/hashicorp/hc-install/product"
 	"github.com/hashicorp/hc-install/releases"
 	"github.com/hashicorp/terraform-exec/tfexec"
-	logger "gitlab.appsflyer.com/go/af-go-logger/v1"
 )
 
 var (

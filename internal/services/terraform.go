@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	logger "gitlab.appsflyer.com/go/af-go-logger/v1"
-	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/services/templates"
+	logger "github.com/AppsFlyer/go-logger"
+	"github.com/AppsFlyer/terra-crust/internal/services/templates"
 )
 
 const moduleDescription = `<<EOT

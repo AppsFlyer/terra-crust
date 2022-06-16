@@ -3,8 +3,8 @@ package app
 import (
 	"os"
 
+	logger "github.com/AppsFlyer/go-logger"
 	"github.com/spf13/viper"
-	logger "gitlab.appsflyer.com/go/af-go-logger/v1"
 )
 
 func NewConfig(logger logger.Logger) *viper.Viper {

@@ -4,8 +4,8 @@ import (
 	"context"
 	"os"
 
-	logger "gitlab.appsflyer.com/go/af-go-logger/v1"
-	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/cmd/app"
+	logger "github.com/AppsFlyer/go-logger"
+	"github.com/AppsFlyer/terra-crust/internal/cmd/app"
 )
 
 func main() {

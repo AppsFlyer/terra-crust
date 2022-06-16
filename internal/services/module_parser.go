@@ -1,9 +1,9 @@
 package services
 
 import (
-	logger "gitlab.appsflyer.com/go/af-go-logger/v1"
-	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/services/drivers"
-	"gitlab.appsflyer.com/real-time-platform/terra-crust/internal/types"
+	logger "github.com/AppsFlyer/go-logger"
+	"github.com/AppsFlyer/terra-crust/internal/services/drivers"
+	"github.com/AppsFlyer/terra-crust/internal/types"
 )
 
 type ModuleParser struct {

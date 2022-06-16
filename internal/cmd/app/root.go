@@ -1,8 +1,8 @@
 package app
 
 import (
+	logger "github.com/AppsFlyer/go-logger"
 	"github.com/spf13/cobra"
-	logger "gitlab.appsflyer.com/go/af-go-logger/v1"
 )
 
 type RootCommand struct {
