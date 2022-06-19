@@ -36,8 +36,8 @@ func TestParseBadPath(t *testing.T) {
 	parser := drivers.NewTerraformParser(log)
 
 	m, err := parser.Parse("../../../internal")
-	if err == nil {
-		t.Errorf("Expected to fail to parse , reason: %s", err.Error())
+	if err != nil {
+		t.Errorf("failed to parse , reason: %s", err.Error())
 	}
 
 	if len(m) != 0 {
