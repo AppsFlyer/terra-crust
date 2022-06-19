@@ -1,0 +1,59 @@
+name: Release
+on:
+  release:
+    types: [created]
+  # workflow_run:
+  #   workflows: ["golang-build-test-coverage"]
+  #   branches: [main]
+  #   types: 
+  #     - completed
+  # Allows you to run this workflow manually from the Actions tab
+  # workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # release-blocker:
+  #   name: Release blocked
+  #   runs-on: ubuntu-latest
+  #   if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+  #   steps:
+  #     - run: |
+  #         echo '::echo::on'
+  #         echo "Release flow is blocked by 'golang-build-test-coverage' workflow failure"
+  releases-matrix:
+    name: Release Go Binary
+    runs-on: ubuntu-latest
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: write  # for wangyoucao577/go-release-action to upload release assets
+    strategy:
+      matrix:
+        goos: [linux, darwin]
+        goarch: [amd64, arm64]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Get Go version
+        id: get_go_version
+        run: |
+          echo '::echo::on'
+          go mod edit -json 2> error 1> output
+          echo "::set-output name=errors::$(cat error)"
+          jq -r .Go output > version
+          echo "::set-output name=version::$(cat version)"
+ 
+      - uses: wangyoucao577/go-release-action@v1.29
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          goversion: ${{ steps.get_go_version.outputs.version }}
+          # project_path: ""
+          binary_name: "terra-crust"
+          # pre_command: ""
+          # build_command: ""
+          # build_flags: ""
+          # ldflags: ""
+
