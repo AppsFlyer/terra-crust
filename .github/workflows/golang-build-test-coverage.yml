@@ -1,0 +1,145 @@
+name: golang-build-test-coverage
+# TODO: build on MR and merge to master
+on:
+  push:
+     branches-ignore:
+      - master
+  pull_request:
+    branches:    
+      - master
+  release:
+
+jobs:
+  conventional_commits:
+    name: Conventional Commits
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: webiny/action-conventional-commits@v1.0.5
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Setup go
+      uses: actions/setup-go@v3
+      with:
+        go-version-file: './go.mod'
+    - name: Get dependencies
+      run: |
+        go get -v -t -d ./...
+        if [ -f Gopkg.toml ]; then
+            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+            dep ensure
+        fi
+    - name: Build
+      run: go build -v internal/cmd/main.go
+  
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: './go.mod'
+      - name: Lint
+        uses: golangci/golangci-lint-action@v3
+        # continue-on-error: true
+        with:
+          # Optional: version of golangci-lint to use in form of v1.2 or v1.2.3 or `latest` to use the latest version
+          version: v1.41.1
+
+          # Optional: working directory, useful for monorepos
+          # TODO: remove before release
+          working-directory: internal
+
+          # Optional: golangci-lint command line arguments.
+          args: --fast --enable-all -D scopelint -D gocyclo -D godot -D funlen -D lll -D gocognit -D gofumpt -D wsl -D gomnd --skip-dirs-use-default
+
+          # Optional: show only new issues if it's a pull request. The default value is `false`.
+          # only-new-issues: true
+
+          # Optional: if set to true then the all caching functionality will be complete disabled,
+          #           takes precedence over all other caching options.
+          # skip-cache: true
+
+          # Optional: if set to true then the action don't cache or restore ~/go/pkg.
+          # skip-pkg-cache: true
+
+          # Optional: if set to true then the action don't cache or restore ~/.cache/go-build.
+          # skip-build-cache: true
+
+  vet:
+    name: Vet
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: './go.mod'
+      - name: Vet
+        run: |
+          go vet ./...
+
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: './go.mod'
+      - name: Run unit tests
+        run: |
+          go test ./... -coverprofile coverage.out -covermode atomic
+          go tool cover -func coverage.out
+      - uses: actions/upload-artifact@v2
+        with:
+          name: coverage_report
+          path: coverage.out
+  
+  coverage:
+    name: Coverage report
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: './go.mod'
+      - uses: actions/download-artifact@v2
+        with:
+          name: coverage_report
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          files: coverage.out
+          # dry_run: true
+          fail_ci_if_error: true
+          flags: unittests
+      - name: Quality Gate - Test coverage shall be above threshold
+        env:
+            TESTCOVERAGE_THRESHOLD: 0
+        run: |
+              echo "Quality Gate: checking test coverage is above threshold ..."
+              echo "Threshold             : $TESTCOVERAGE_THRESHOLD %"
+              totalCoverage=`go tool cover -func=coverage.out | grep total | grep -Eo '[0-9]+\.[0-9]+'`
+              echo "Current test coverage : $totalCoverage %"
+              if (( $(echo "$totalCoverage $TESTCOVERAGE_THRESHOLD" | awk '{print ($1 > $2)}') )); then
+                  echo "OK"
+              else
+                  echo "Current test coverage is below threshold. Please add more unit tests or adjust threshold to a lower value."
+                  echo "Failed"
+                  exit 1
+              fi
