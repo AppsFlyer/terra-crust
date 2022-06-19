@@ -33,20 +33,20 @@ Terra crust will release 3 files that wraps all of the existing modules folder u
 ## Commands:
 ### Create Main:
 ```
-./main.go terraform-main --destination-path="." --source-path=".../modules"
+terra-crust terraform-main --destination-path="." --source-path=".../modules"
 ```
-* Main has additional flag: ``main-template-path`` to support external main templates like in examples/templates/main.tf.tmpl
+* terra-crust has additional flag: ``main-template-path`` to support external main templates like in examples/templates/main.tf.tmpl
 ### Create Variables:
 ```
-./main terraform-variables --destination-path="." --source-path=".../modules"
+terra-crust terraform-variables --destination-path="." --source-path=".../modules"
 ```
 ### Create Locals:
 ```
-./main terraform-locals --destination-path="." --source-path=".../modules"
+terra-crust terraform-locals --destination-path="." --source-path=".../modules"
 ```
 ### Create All:
 ```
-./main terraform-all --destination-path="." --source-path=".../modules"
+terra-crust terraform-all --destination-path="." --source-path=".../modules"
 ```
 * same as Main has additional flag: ``main-template-path`` to support external main templates like in examples/templates/main.tf.tmpl
 * Upon failing on create one of the files , It wont fail the entire flow(Will keep on to the next files).
