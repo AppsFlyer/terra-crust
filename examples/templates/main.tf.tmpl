@@ -1,0 +1,21 @@
+module "consul_sync" {
+  source = "../../modules/consul_sync"
+  # Dependency Injection - Required Fields
+
+  affinity = module.kafka.affinity
+  eks_cluster = module.zookeeper.eks_cluster
+
+  # Configurable Variables - Optinal Fields 
+  {{(GetDefaults "consul_sync" .)}}
+}
+
+module "zookeeper" {
+  source = "../../modules/consul_sync"
+  # Dependency Injection - Required Fields
+
+  affinity = module.kafka.affinity
+  eks_cluster = module.zookeeper.eks_cluster
+
+  # Configurable Variables - Optinal Fields 
+  {{(GetDefaults "consul_sync" .)}}
+}
