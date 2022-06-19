@@ -21,7 +21,7 @@ func NewParser(logger logger.Logger, driver drivers.Parser) *ModuleParser {
 func (p *ModuleParser) GetModulesList(rootFolder string) (map[string]*types.Module, error) {
 	modulesList, err := p.parsingDriver.Parse(rootFolder)
 	if err != nil {
-		p.logger.ErrorWithError("Failed parsing root folder", err)
+		p.logger.Error("Failed parsing root folder", err.Error())
 
 		return nil, err
 	}

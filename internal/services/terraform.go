@@ -38,7 +38,7 @@ func NewTerraform(logger logger.Logger, parser *ModuleParser, templateHandler *T
 func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPath string) error {
 	moduleList, err := t.parser.GetModulesList(modulesFilePath)
 	if err != nil {
-		t.logger.ErrorWithError("Failed to get module list", err)
+		t.logger.Error("Failed to get module list", err.Error())
 
 		return err
 	}
@@ -71,7 +71,7 @@ func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPat
 func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath string) error {
 	moduleList, err := t.parser.GetModulesList(modulesFilePath)
 	if err != nil {
-		t.logger.ErrorWithError("Failed to get module list", err)
+		t.logger.Error("Failed to get module list", err.Error())
 
 		return err
 	}
@@ -140,7 +140,7 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 func (t *Terraform) GenerateMain(modulesFilePath, destinationPath, mainTemplatePath string) error {
 	moduleList, err := t.parser.GetModulesList(modulesFilePath)
 	if err != nil {
-		t.logger.ErrorWithError("Failed to get module list", err)
+		t.logger.Error("Failed to get module list", err.Error())
 
 		return err
 	}

@@ -32,7 +32,7 @@ func (p *TerraformParser) Parse(path string) (map[string]*types.Module, error) {
 	err := filepath.Walk(path,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
-				p.logger.ErrorWithError("failed scraping folder on filepath.walk", err)
+				p.logger.Error("failed scraping folder on filepath.walk %s", err.Error())
 
 				return err
 			}
@@ -43,7 +43,7 @@ func (p *TerraformParser) Parse(path string) (map[string]*types.Module, error) {
 
 			src, err := ioutil.ReadFile(path)
 			if err != nil {
-				p.logger.ErrorWithError("Failed reading file under path, make sure files exist", err)
+				p.logger.Error("Failed reading file under path, make sure files exist %s", err.Error())
 
 				return err
 			}
@@ -80,7 +80,7 @@ func (p *TerraformParser) Parse(path string) (map[string]*types.Module, error) {
 			return nil
 		})
 	if err != nil {
-		p.logger.ErrorWithError("failed on scraping root folder please make sure path is correct", err)
+		p.logger.Error("failed on scraping root folder please make sure path is correct, %s", err.Error())
 
 		return nil, err
 	}

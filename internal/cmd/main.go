@@ -9,13 +9,13 @@ import (
 )
 
 func main() {
-	log := logger.NewLogger(logger.WithName("terraform-generate-tool"))
+	log := logger.NewSimple()
 	if err := app.NewRootCommand(log).Execute(); err != nil {
 		if err == context.Canceled {
 			os.Exit(0)
 		}
 
-		log.ErrorWithError("Error executing command. Exiting.", err)
+		log.Error("Error executing command. Exiting.", err.Error())
 		os.Exit(1)
 	}
 }

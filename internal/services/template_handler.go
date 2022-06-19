@@ -40,7 +40,7 @@ func (th *TemplateHandler) runTerraformFmt(path string) error {
 
 	execPath, err := installer.Install(context.Background())
 	if err != nil {
-		th.logger.ErrorWithError("Failed installing terraform", err)
+		th.logger.Error("Failed installing terraform", err.Error())
 
 		return err
 	}
@@ -48,13 +48,13 @@ func (th *TemplateHandler) runTerraformFmt(path string) error {
 	workingDir := path
 	tf, err := tfexec.NewTerraform(workingDir, execPath)
 	if err != nil {
-		th.logger.ErrorWithError("failed running NewTerraform", err)
+		th.logger.Error("failed running NewTerraform", err.Error())
 
 		return err
 	}
 
 	if err := tf.FormatWrite(context.Background()); err != nil {
-		th.logger.ErrorWithError("failed running Show", err)
+		th.logger.Error("failed running Show", err.Error())
 
 		return err
 	}

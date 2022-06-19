@@ -20,7 +20,7 @@ func NewConfig(logger logger.Logger) *viper.Viper {
 	}
 
 	if err := v.ReadInConfig(); err != nil {
-		logger.ErrorWithError("Failed to load the config file", err)
+		logger.Error("Failed to load the config file", err.Error())
 	}
 
 	return v

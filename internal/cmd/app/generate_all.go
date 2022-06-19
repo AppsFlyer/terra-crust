@@ -12,24 +12,24 @@ func generateAllFiles(root *RootCommand) *cobra.Command {
 		Short:   "generate terraform locals , main and variables",
 		Example: "",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			log := root.log.WithName("generate-all-files")
+			log := root.log
 
 			terraformSvc := InitTerraformGeneratorService(log)
 
 			if err := terraformSvc.GenerateMain(flags.SourcePath, flags.DestinationPath, flags.MainTemplateFilePath); err != nil {
-				log.ErrorWithError("Failed generating the terraform main file", err)
+				log.Error("Failed generating the terraform main file", err.Error())
 
 				return err
 			}
 
 			if err := terraformSvc.GenerateModuleDefaultLocals(flags.SourcePath, flags.DestinationPath); err != nil {
-				log.ErrorWithError("Failed generating the terraform locals file", err)
+				log.Error("Failed generating the terraform locals file", err.Error())
 
 				return err
 			}
 
 			if err := terraformSvc.GenerateModuleVariableObject(flags.SourcePath, flags.DestinationPath); err != nil {
-				log.ErrorWithError("Failed generating the terraform variable file", err)
+				log.Error("Failed generating the terraform variable file", err.Error())
 
 				return err
 			}
@@ -42,10 +42,10 @@ func generateAllFiles(root *RootCommand) *cobra.Command {
 	cmd.Flags().StringVar(&flags.DestinationPath, "destination-path", "", "Required: Destination path to write the new terraform file")
 	cmd.Flags().StringVar(&flags.MainTemplateFilePath, "main-template-path", "", "Optional: Custom main template path for generated module, will take default if not provided")
 	if err := cmd.MarkFlagRequired("source-path"); err != nil {
-		root.log.ErrorWithError("failed to set required flag on source-path", err)
+		root.log.Error("failed to set required flag on source-path", err.Error())
 	}
 	if err := cmd.MarkFlagRequired("destination-path"); err != nil {
-		root.log.ErrorWithError("failed to set required flag on destination-path", err)
+		root.log.Error("failed to set required flag on destination-path", err.Error())
 	}
 
 	return cmd
