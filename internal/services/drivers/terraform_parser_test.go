@@ -9,7 +9,7 @@ import (
 
 func TestParse(t *testing.T) {
 	t.Parallel()
-	log := logger.NewLogger(logger.WithName("test-log"))
+	log := logger.NewSimple()
 	parser := drivers.NewTerraformParser(log)
 
 	m, err := parser.Parse("../../../mock/modules")
@@ -32,7 +32,7 @@ func TestParse(t *testing.T) {
 
 func TestParseBadPath(t *testing.T) {
 	t.Parallel()
-	log := logger.NewLogger(logger.WithName("test-log"))
+	log := logger.NewSimple()
 	parser := drivers.NewTerraformParser(log)
 
 	m, err := parser.Parse("../../../internal")
@@ -47,7 +47,7 @@ func TestParseBadPath(t *testing.T) {
 
 func TestParseNotExistingPath(t *testing.T) {
 	t.Parallel()
-	log := logger.NewLogger(logger.WithName("test-log"))
+	log := logger.NewSimple()
 	parser := drivers.NewTerraformParser(log)
 
 	_, err := parser.Parse("../../internal")
