@@ -22,13 +22,13 @@ Terra crust will release 3 files that wraps all of the existing modules folder u
 ## Output Examples:
 
 ### Variables:
-![](/img/vars.jpg)
+![](/docs/images/vars.jpg)
 
 ### Locals:
-![](/img/locals.jpg)
+![](/docs/images/locals.jpg)
 
 ### Main:
-![](/img/main.jpg)
+![](/docs/images/main.jpg)
 
 ## Commands:
 ### Create Main:
