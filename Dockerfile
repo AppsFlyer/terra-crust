@@ -10,4 +10,4 @@ ARG ARCH=amd64
 WORKDIR /opt/
 COPY --from=builder /terra-crust/bin/terra-crust-linux-${ARCH} ./
 RUN mv terra-crust-linux-${ARCH} terra-crust
-CMD ["./terra-crust"]  
+ENTRYPOINT ["./terra-crust"]  
