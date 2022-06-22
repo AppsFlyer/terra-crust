@@ -54,5 +54,8 @@ terra-crust terraform-all --destination-path="." --source-path=".../modules"
 * same as Main has additional flag: ``main-template-path`` to support external main templates like in examples/templates/main.tf.tmpl
 * Upon failing on create one of the files , It wont fail the entire flow(Will keep on to the next files).
 
+## Example Usage
+Further guidelines as well as examples, can be shown [here](./examples/example.md).
+
 ## Contribution
 In order to contribute, please make sure to test and validate that everything is working, including lint ci, open a merge request and wait for approval.
