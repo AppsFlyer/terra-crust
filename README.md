@@ -1,3 +1,5 @@
+![Build](https://github.com/danielvrog/terra-crust/actions/workflows/golang-build-test-coverage.yml/badge.svg?branch=main) [![Go Report Card](https://goreportcard.com/badge/github.com/AppsFlyer/terra-crust)](https://goreportcard.com/report/github.com/AppsFlyer/terra-crust) [![codecov](https://codecov.io/gh/AppsFlyer/terra-crust/branch/main/graph/badge.svg)](https://codecov.io/gh/AppsFlyer/terra-crust)
+
 <img src="./docs/images/logo/terra-crust.png" width="400">
 
 ----
