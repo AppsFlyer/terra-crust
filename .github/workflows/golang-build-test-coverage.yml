@@ -1,12 +1,11 @@
 name: golang-build-test-coverage
-# TODO: build on MR and merge to master
 on:
   push:
      branches-ignore:
-      - master
+      - main
   pull_request:
     branches:    
-      - master
+      - main
   release:
 
 jobs:

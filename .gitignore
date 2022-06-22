@@ -1,3 +1,4 @@
 main
 main.tmpl
 config
+bin/*
