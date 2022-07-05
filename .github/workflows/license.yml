@@ -1,0 +1,34 @@
+name: License
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  License:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v2
+      - name: set up go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17.2
+      - name: Get addlicense
+        run: go get -d github.com/google/addlicense
+      - name: Build addlicense
+        run: go build -o addlicense github.com/google/addlicense
+      - name: License check
+        id: check
+        run: |
+          set +e
+          ./addlicense --check -c AppsFlyer -l apache ${PWD}/**/**/*.go
+          echo ::set-output name=exit_status::$?
+        # continue-on-error: true
+      - name: Message
+        if: steps.check.outputs.exit_status != 0
+        run: | 
+          echo -e "License headers missing. \nIn order to fix run: 'docker run -it -v \${PWD}:/src -w /src ghcr.io/google/addlicense:v1.0.0 -c AppsFlyer -l apache ./**/**/*.go' "
+          exit 1
