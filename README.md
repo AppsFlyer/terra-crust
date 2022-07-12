@@ -12,7 +12,7 @@ Our goal in developing terra crust was to hide the system's complexity and provi
 
 ## HashiConf Europe 
 
-Listen to a 12 minutes talk about Terra Crust at HashiConf Conference
+Listen to a 12 minutes talk about Terra Crust at HashiConf conference Amsterdam June 2022
 
 [![Watch the video](https://img.youtube.com/vi/_LhbL0ZRz_c/maxresdefault.jpg)](https://www.youtube.com/watch?v=_LhbL0ZRz_c)
 
