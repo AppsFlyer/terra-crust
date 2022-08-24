@@ -35,7 +35,7 @@ func NewRootCommand(logger logger.Logger) *RootCommand {
 		SilenceUsage:  true,
 	}
 	root.Command.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-		//root.log = logger.WithName("generate-tool")
+		root.log = logger
 
 		return nil
 	}
