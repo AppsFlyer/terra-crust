@@ -19,6 +19,8 @@ import (
 	"strings"
 )
 
+const TerraformMetaDirectoryName = ".terraform"
+
 type Module struct {
 	Name      string      `hcl:"name,label"`
 	Variables []*Variable `hcl:"variable,block"`
