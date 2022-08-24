@@ -51,6 +51,10 @@ func (p *TerraformParser) Parse(path string) (map[string]*types.Module, error) {
 				return err
 			}
 
+			if info.IsDir() && info.Name() == types.TerraformMetaDirectoryName {
+				return filepath.SkipDir
+			}
+
 			if info.IsDir() || !strings.HasSuffix(info.Name(), ".tf") {
 				return nil
 			}
