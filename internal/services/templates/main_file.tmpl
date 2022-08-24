@@ -1,4 +1,7 @@
 {{$rootFolderPath := .RootPath}}
+terraform {
+  experiments = [module_variable_optional_attrs]
+}
 {{range $moduleName,$moduleData := .Module}}
 module {{$moduleName}} {
   source = "{{$rootFolderPath}}/{{$moduleName}}"
