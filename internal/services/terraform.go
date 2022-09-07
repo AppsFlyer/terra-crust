@@ -24,7 +24,6 @@ import (
 
 const moduleDescription = `<<EOT
 	(Optional) %s Module will be used by default.
-	[Readme](https://gitlab.appsflyer.com/real-time-platform/af-rti-iac/modules/strimzi/-/blob/master/terraform/modules/%s/README.md)
 	EOT`
 
 const main_default_var_row_template = "%s = local.%s.%s \n"
@@ -66,7 +65,7 @@ func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPat
 
 		out[k] = &templates.VariablesModulesTF{
 			ModuleName:        k,
-			Description:       fmt.Sprintf(moduleDescription, k, k),
+			Description:       fmt.Sprintf(moduleDescription, k),
 			ObjectTypeMapping: make(map[string]string, len(m.Variables)),
 			DefaultValues:     make(map[string]string, len(m.Variables)),
 		}
