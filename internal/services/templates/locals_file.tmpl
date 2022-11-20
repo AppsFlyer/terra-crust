@@ -8,13 +8,22 @@ locals{ {{range $moduleName,$moduleData := .Module}}
 {{define "simple_local_var"}} {{$moduleName := .VariableName}} {{range $localName,$localValue := .ModuleData}}
 {{$localName}} = coalesce(var.{{$moduleName}}.{{$localName}},{{$localValue}}) {{end}}{{end}}
 
+
 {{define "typeMapLocalBlock"}} {{$moduleData := .ModuleData}} {{$moduleName := .ModuleName}}{{range $mapKey,$mapValue :=  $moduleData.MapLocals}}
-{{$mapKey}} = var.{{$moduleName}}.{{$mapKey}} != null ? merge(var.{{$moduleName}}.{{$mapKey}},
+{{ $dataLen := len $mapValue }} {{ if eq $dataLen 0 }} var.{{$moduleName}}.{{$mapKey}} != null ? merge(var.{{$moduleName}}.{{$mapKey}}:{}{{end}}
+{{ if gt $dataLen 0 }} {{$mapKey}} = var.{{$moduleName}}.{{$mapKey}} != null ? merge(var.{{$moduleName}}.{{$mapKey}},
 tomap({ {{range $propertyName, $propertyValue := $mapValue}}
 {{$propertyName}} = contains(keys(var.{{$moduleName}}.{{$mapKey}}),{{$propertyName}}) != false ? var.{{$moduleName}}.{{$mapKey}}[{{$propertyName}}] : {{$propertyValue}}{{end}}}
 )):{
 {{range $name, $value := $mapValue}} {{$name}} = {{$value}}
-{{end}}} {{end}}
+{{end}}}{{end}} {{end}}
 {{end}}
 
 
+```
+lambda_env_variables = var.repositories_synchronizer.lambda_env_variables != null ? merge(var.repositories_synchronizer.lambda_env_variables,
+tomap({ 
+"" = contains(keys(var.repositories_synchronizer.lambda_env_variables),"") != false ? var.repositories_synchronizer.lambda_env_variables[""] : }
+)):{
+ "" = 
+} 
