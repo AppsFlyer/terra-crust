@@ -158,22 +158,24 @@ func (t *Terraform) GenerateMain(modulesFilePath, destinationPath, mainTemplateP
 		return err
 	}
 
+	t.logger.Infof("Amount of modules got from parser: %d", len(moduleList))
+
 	out := &templates.MainModuleTF{
 		Module:   make(map[string]*templates.MainModuleData),
 		RootPath: modulesFilePath,
 	}
 
 	for k, m := range moduleList {
-		if len(m.Variables) == 0 {
-			continue
-		}
-
 		out.Module[k] = &templates.MainModuleData{
 			ModuleData: &templates.ModuleData{
 				SimpleLocals: make(map[string]string),
 				MapLocals:    make(map[string]templates.ComplexVariableData),
 			},
 			RequiredFields: make(map[string]string),
+		}
+
+		if len(m.Variables) == 0 {
+			continue
 		}
 
 		for _, v := range m.Variables {
