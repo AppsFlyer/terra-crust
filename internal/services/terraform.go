@@ -158,8 +158,6 @@ func (t *Terraform) GenerateMain(modulesFilePath, destinationPath, mainTemplateP
 		return err
 	}
 
-	t.logger.Infof("Amount of modules got from parser: %d", len(moduleList))
-
 	out := &templates.MainModuleTF{
 		Module:   make(map[string]*templates.MainModuleData),
 		RootPath: modulesFilePath,
