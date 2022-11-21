@@ -14,5 +14,6 @@ locals{ {{range $moduleName,$moduleData := .Module}}
 tomap({ {{range $propertyName, $propertyValue := $mapValue}}
 {{$propertyName}} = contains(keys(var.{{$moduleName}}.{{$mapKey}}),{{$propertyName}}) != false ? var.{{$moduleName}}.{{$mapKey}}[{{$propertyName}}] : {{$propertyValue}}{{end}}}
 )):{
-{{range $name, $value := $mapValue}} {{$name}} = {{$value}}{{end}}}{{end}}{{end}} 
+{{range $name, $value := $mapValue}} {{$name}} = {{$value}}
+{{end}}} {{end}}{{end}} 
 {{end}}
