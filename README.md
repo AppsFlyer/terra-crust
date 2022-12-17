@@ -16,6 +16,12 @@ Listen to a 12 minutes talk about Terra Crust at HashiConf conference Amsterdam 
 
 [![Watch the video](https://img.youtube.com/vi/_LhbL0ZRz_c/maxresdefault.jpg)](https://www.youtube.com/watch?v=_LhbL0ZRz_c)
 
+## AWS reinvent 2022
+
+Check the brakeout session **"Running high-throughput, real-time ad platforms in the cloud (ADM302)"** at AWS reinvent 2022 presenting Terra crust and the way we empower our developers.
+
+[![Watch the video](https://img.youtube.com/vi/iHNgS1YKtH8/maxresdefault.jpg)](https://www.youtube.com/watch?v=iHNgS1YKtH8&t=1348s)
+
 ## How it works
 
 Terra crust creates a **root module** from existing modules folders inside your terraform project, and exposes all the `variables`,`locals` and `main` used in each module automatically. \
