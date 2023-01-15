@@ -2,7 +2,7 @@ SHELL := /bin/bash
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 export GO_VERSION ?= $(shell grep -E "^go " go.mod | awk -F' ' '{print $$2}' )
-export GOLANGCI_LINT_VERSION=v1.51.1
+export GOLANGCI_LINT_VERSION=v1.50.1
 export MAIN_GO=internal/cmd/main.go
 
 .PHONY: help
