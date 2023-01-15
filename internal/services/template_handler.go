@@ -83,7 +83,7 @@ func (th *TemplateHandler) WriteTemplateToFile(fileName, templatePath, destinati
 	}
 
 	buf := new(bytes.Buffer)
-	if err = tmpl.Execute(buf, out); err != nil {
+	if tmpl.Execute(buf, out) != nil {
 		return err
 	}
 
