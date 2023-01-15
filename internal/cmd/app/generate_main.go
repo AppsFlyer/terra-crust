@@ -20,7 +20,7 @@ import (
 )
 
 func generateMain(root *RootCommand) *cobra.Command {
-	var flags types.TFGenerateFlags = types.TFGenerateFlags{}
+	flags := types.TFGenerateFlags{}
 	cmd := &cobra.Command{
 		Use:     "terraform-main",
 		Short:   "create general object terraform main file",

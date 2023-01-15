@@ -22,16 +22,19 @@ import (
 	"github.com/AppsFlyer/terra-crust/internal/services/templates"
 )
 
-const moduleDescription = `<<EOT
+const (
+	moduleDescription = `<<EOT
 	(Optional) %s Module will be used by default.
 	EOT`
-
-const main_default_var_row_template = "%s = local.%s.%s \n"
+	mainDefaultVarRowTemplate = "%s = local.%s.%s \n"
+	emptyString               = ""
+	emptyStringWrapped        = `""`
+)
 
 type Terraform struct {
 	parser             *ModuleParser
 	templateHandler    *TemplateHandler
-	logger             logger.Logger
+	log                logger.Logger
 	localsTemplatePath string
 	objectTemplatePath string
 	mainTemplatePath   string
@@ -41,7 +44,7 @@ func NewTerraform(logger logger.Logger, parser *ModuleParser, templateHandler *T
 	return &Terraform{
 		parser:             parser,
 		localsTemplatePath: localsTemplatePath,
-		logger:             logger,
+		log:                logger,
 		objectTemplatePath: objectTemplatePath,
 		mainTemplatePath:   mainTemplatePath,
 		templateHandler:    templateHandler,
@@ -51,7 +54,7 @@ func NewTerraform(logger logger.Logger, parser *ModuleParser, templateHandler *T
 func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPath string) error {
 	moduleList, err := t.parser.GetModulesList(modulesFilePath)
 	if err != nil {
-		t.logger.Error("Failed to get module list", err.Error())
+		t.log.Error("Failed to get module list", err.Error())
 
 		return err
 	}
@@ -71,8 +74,8 @@ func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPat
 		}
 
 		for _, v := range m.Variables {
-			if v.Default != nil && string(v.Default.Bytes()) != `""` {
-				out[k].ObjectTypeMapping[v.Name] = strings.ReplaceAll(string(v.Type.Bytes()), " ", "")
+			if v.Default != nil && string(v.Default.Bytes()) != emptyStringWrapped {
+				out[k].ObjectTypeMapping[v.Name] = strings.ReplaceAll(string(v.Type.Bytes()), " ", emptyString)
 				out[k].DefaultValues[v.Name] = string(v.Default.Bytes())
 			}
 		}
@@ -84,7 +87,7 @@ func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPat
 func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath string) error {
 	moduleList, err := t.parser.GetModulesList(modulesFilePath)
 	if err != nil {
-		t.logger.Error("Failed to get module list", err.Error())
+		t.log.Error("Failed to get module list", err.Error())
 
 		return err
 	}
@@ -104,14 +107,14 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 		}
 
 		for _, v := range m.Variables {
-			if v.Default != nil && string(v.Default.Bytes()) != `""` && !strings.Contains(string(v.Type.Bytes()), "map") {
+			if v.Default != nil && string(v.Default.Bytes()) != emptyStringWrapped && !strings.Contains(string(v.Type.Bytes()), "map") {
 				out.Module[k].SimpleLocals[v.Name] = string(v.Default.Bytes())
 			}
 
-			if v.Default != nil && string(v.Default.Bytes()) != `""` && strings.Contains(string(v.Type.Bytes()), "map") {
+			if v.Default != nil && string(v.Default.Bytes()) != emptyStringWrapped && strings.Contains(string(v.Type.Bytes()), "map") {
 				rawDefault := string(v.Default.Bytes())
-				rawDefault = strings.ReplaceAll(rawDefault, "{", "")
-				rawDefault = strings.ReplaceAll(rawDefault, "}", "")
+				rawDefault = strings.ReplaceAll(rawDefault, "{", emptyString)
+				rawDefault = strings.ReplaceAll(rawDefault, "}", emptyString)
 				rawDefault = strings.TrimSpace(rawDefault)
 
 				splittedRawString := strings.Split(rawDefault, "\n")
@@ -130,8 +133,8 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 						continue
 					}
 
-					//if property name is none string
-					if !strings.Contains(propertyName, `"`) {
+					// if property name is none string
+					if !strings.Contains(propertyName, emptyStringWrapped) {
 						propertyName = fmt.Sprintf(`"%s"`, propertyName)
 					}
 
@@ -153,7 +156,7 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 func (t *Terraform) GenerateMain(modulesFilePath, destinationPath, mainTemplatePath string) error {
 	moduleList, err := t.parser.GetModulesList(modulesFilePath)
 	if err != nil {
-		t.logger.Error("Failed to get module list", err.Error())
+		t.log.Error("Failed to get module list", err.Error())
 
 		return err
 	}
@@ -177,13 +180,13 @@ func (t *Terraform) GenerateMain(modulesFilePath, destinationPath, mainTemplateP
 		}
 
 		for _, v := range m.Variables {
-			//Simple variable
-			if v.Default != nil && string(v.Default.Bytes()) != `""` && !strings.Contains(string(v.Type.Bytes()), "map") {
+			// Simple variable
+			if v.Default != nil && string(v.Default.Bytes()) != emptyStringWrapped && !strings.Contains(string(v.Type.Bytes()), "map") {
 				out.Module[k].SimpleLocals[v.Name] = string(v.Default.Bytes())
 			}
 
-			//Map variable
-			if v.Default != nil && string(v.Default.Bytes()) != `""` && strings.Contains(string(v.Type.Bytes()), "map") {
+			// Map variable
+			if v.Default != nil && string(v.Default.Bytes()) != emptyStringWrapped && strings.Contains(string(v.Type.Bytes()), "map") {
 				rawDefault := string(v.Default.Bytes())
 				rawDefault = strings.TrimSpace(rawDefault)
 				splittedRawString := strings.Split(rawDefault, "\n")
@@ -200,19 +203,20 @@ func (t *Terraform) GenerateMain(modulesFilePath, destinationPath, mainTemplateP
 						out.Module[k].MapLocals[v.Name] = make(templates.ComplexVariableData)
 					}
 
-					out.Module[k].MapLocals[v.Name][propertyName] = ""
+					out.Module[k].MapLocals[v.Name][propertyName] = emptyString
 				}
 			}
 
-			//Required Variable
-			if v.Default == nil || string(v.Default.Bytes()) == `""` {
+			// Required Variable
+			if v.Default == nil || string(v.Default.Bytes()) == emptyStringWrapped {
 				out.Module[k].RequiredFields[v.Name] = ""
 			}
 		}
 	}
+
 	path := t.mainTemplatePath
 	isDefault := true
-	if mainTemplatePath != "" {
+	if mainTemplatePath != emptyString {
 		path = mainTemplatePath
 		isDefault = false
 	}

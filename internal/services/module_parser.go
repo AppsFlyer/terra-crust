@@ -25,10 +25,10 @@ type ModuleParser struct {
 	logger        logger.Logger
 }
 
-func NewParser(logger logger.Logger, driver drivers.Parser) *ModuleParser {
+func NewParser(log logger.Logger, driver drivers.Parser) *ModuleParser {
 	return &ModuleParser{
 		parsingDriver: driver,
-		logger:        logger,
+		logger:        log,
 	}
 }
 

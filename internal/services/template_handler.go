@@ -40,9 +40,9 @@ type TemplateHandler struct {
 	logger logger.Logger
 }
 
-func NewTemplateHandler(logger logger.Logger) *TemplateHandler {
+func NewTemplateHandler(log logger.Logger) *TemplateHandler {
 	return &TemplateHandler{
-		logger: logger,
+		logger: log,
 	}
 }
 
@@ -81,13 +81,14 @@ func (th *TemplateHandler) WriteTemplateToFile(fileName, templatePath, destinati
 	if err != nil {
 		return err
 	}
+
 	buf := new(bytes.Buffer)
-	if err := tmpl.Execute(buf, out); err != nil {
+	if err = tmpl.Execute(buf, out); err != nil {
 		return err
 	}
 
 	filePath := fmt.Sprintf("%s/%s", destinationPath, fileName)
-	if err := os.Remove(filePath); (err != nil) && (!errors.Is(err, os.ErrNotExist)) {
+	if err = os.Remove(filePath); (err != nil) && (!errors.Is(err, os.ErrNotExist)) {
 		return err
 	}
 
@@ -111,12 +112,12 @@ func (th *TemplateHandler) GetTemplate(templatePath string, isDefaultTemplate bo
 	splittedPath := strings.Split(templatePath, "/")
 	templateName := splittedPath[len(splittedPath)-1]
 
-	apiFunc := NewTemplateApi()
+	apiFunc := NewTemplateAPI()
 	if isDefaultTemplate {
 		langs, _ := assets.ReadFile(fmt.Sprintf("templates/%s", templateName))
 
-		return template.New(templateName).Funcs(*apiFunc.ApiFuncMap).Parse(string(langs))
+		return template.New(templateName).Funcs(*apiFunc.APIFuncMap).Parse(string(langs))
 	}
 
-	return template.New(templateName).Funcs(*apiFunc.ApiFuncMap).ParseFiles(templatePath)
+	return template.New(templateName).Funcs(*apiFunc.APIFuncMap).ParseFiles(templatePath)
 }

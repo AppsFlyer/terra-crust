@@ -26,7 +26,8 @@ get-linter:		## Get golangci-lint
 lint: get-linter ## Run linter
 	$(info)
 	$(info ========[ $@ ]========)
-	golangci-lint run --fast --enable-all -D scopelint -D gocyclo -D godot -D funlen -D lll -D gocognit -D gofumpt -D wsl -D gomnd --skip-dirs-use-default
+	rm lint.xml
+	golangci-lint run > lint.xml
 
 test: ## Run go tests
 	$(info)
