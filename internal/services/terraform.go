@@ -20,28 +20,32 @@ import (
 
 	logger "github.com/AppsFlyer/go-logger"
 	"github.com/AppsFlyer/terra-crust/internal/services/templates"
+	"github.com/AppsFlyer/terra-crust/internal/types"
 )
 
-const moduleDescription = `<<EOT
+const (
+	moduleDescription = `<<EOT
 	(Optional) %s Module will be used by default.
 	EOT`
-
-const main_default_var_row_template = "%s = local.%s.%s \n"
+	mainDefaultVarRowTemplate = "%s = local.%s.%s \n"
+	emptyString               = ""
+	emptyStringWrapped        = `""`
+)
 
 type Terraform struct {
 	parser             *ModuleParser
 	templateHandler    *TemplateHandler
-	logger             logger.Logger
+	log                logger.Logger
 	localsTemplatePath string
 	objectTemplatePath string
 	mainTemplatePath   string
 }
 
-func NewTerraform(logger logger.Logger, parser *ModuleParser, templateHandler *TemplateHandler, localsTemplatePath, objectTemplatePath, mainTemplatePath string) *Terraform {
+func NewTerraform(log logger.Logger, parser *ModuleParser, templateHandler *TemplateHandler, localsTemplatePath, objectTemplatePath, mainTemplatePath string) *Terraform {
 	return &Terraform{
 		parser:             parser,
 		localsTemplatePath: localsTemplatePath,
-		logger:             logger,
+		log:                log,
 		objectTemplatePath: objectTemplatePath,
 		mainTemplatePath:   mainTemplatePath,
 		templateHandler:    templateHandler,
@@ -51,7 +55,7 @@ func NewTerraform(logger logger.Logger, parser *ModuleParser, templateHandler *T
 func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPath string) error {
 	moduleList, err := t.parser.GetModulesList(modulesFilePath)
 	if err != nil {
-		t.logger.Error("Failed to get module list", err.Error())
+		t.log.Error("Failed to get module list", err.Error())
 
 		return err
 	}
@@ -71,8 +75,8 @@ func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPat
 		}
 
 		for _, v := range m.Variables {
-			if v.Default != nil && string(v.Default.Bytes()) != `""` {
-				out[k].ObjectTypeMapping[v.Name] = strings.ReplaceAll(string(v.Type.Bytes()), " ", "")
+			if v.Default != nil && string(v.Default.Bytes()) != emptyStringWrapped {
+				out[k].ObjectTypeMapping[v.Name] = strings.ReplaceAll(string(v.Type.Bytes()), " ", emptyString)
 				out[k].DefaultValues[v.Name] = string(v.Default.Bytes())
 			}
 		}
@@ -84,7 +88,7 @@ func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPat
 func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath string) error {
 	moduleList, err := t.parser.GetModulesList(modulesFilePath)
 	if err != nil {
-		t.logger.Error("Failed to get module list", err.Error())
+		t.log.Error("Failed to get module list", err.Error())
 
 		return err
 	}
@@ -104,14 +108,14 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 		}
 
 		for _, v := range m.Variables {
-			if v.Default != nil && string(v.Default.Bytes()) != `""` && !strings.Contains(string(v.Type.Bytes()), "map") {
+			if v.Default != nil && string(v.Default.Bytes()) != emptyStringWrapped && !strings.Contains(string(v.Type.Bytes()), "map") {
 				out.Module[k].SimpleLocals[v.Name] = string(v.Default.Bytes())
 			}
 
-			if v.Default != nil && string(v.Default.Bytes()) != `""` && strings.Contains(string(v.Type.Bytes()), "map") {
+			if v.Default != nil && string(v.Default.Bytes()) != emptyStringWrapped && strings.Contains(string(v.Type.Bytes()), "map") {
 				rawDefault := string(v.Default.Bytes())
-				rawDefault = strings.ReplaceAll(rawDefault, "{", "")
-				rawDefault = strings.ReplaceAll(rawDefault, "}", "")
+				rawDefault = strings.ReplaceAll(rawDefault, "{", emptyString)
+				rawDefault = strings.ReplaceAll(rawDefault, "}", emptyString)
 				rawDefault = strings.TrimSpace(rawDefault)
 
 				splittedRawString := strings.Split(rawDefault, "\n")
@@ -130,9 +134,9 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 						continue
 					}
 
-					//if property name is none string
-					if !strings.Contains(propertyName, `"`) {
-						propertyName = fmt.Sprintf(`"%s"`, propertyName)
+					// if property name is none string
+					if !strings.Contains(propertyName, emptyStringWrapped) {
+						propertyName = fmt.Sprintf(`"%q"`, propertyName)
 					}
 
 					if _, ok := out.Module[k].MapLocals[v.Name]; !ok {
@@ -153,7 +157,7 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 func (t *Terraform) GenerateMain(modulesFilePath, destinationPath, mainTemplatePath string) error {
 	moduleList, err := t.parser.GetModulesList(modulesFilePath)
 	if err != nil {
-		t.logger.Error("Failed to get module list", err.Error())
+		t.log.Error("Failed to get module list", err.Error())
 
 		return err
 	}
@@ -163,8 +167,8 @@ func (t *Terraform) GenerateMain(modulesFilePath, destinationPath, mainTemplateP
 		RootPath: modulesFilePath,
 	}
 
-	for k, m := range moduleList {
-		out.Module[k] = &templates.MainModuleData{
+	for moduleName, m := range moduleList {
+		out.Module[moduleName] = &templates.MainModuleData{
 			ModuleData: &templates.ModuleData{
 				SimpleLocals: make(map[string]string),
 				MapLocals:    make(map[string]templates.ComplexVariableData),
@@ -176,46 +180,51 @@ func (t *Terraform) GenerateMain(modulesFilePath, destinationPath, mainTemplateP
 			continue
 		}
 
-		for _, v := range m.Variables {
-			//Simple variable
-			if v.Default != nil && string(v.Default.Bytes()) != `""` && !strings.Contains(string(v.Type.Bytes()), "map") {
-				out.Module[k].SimpleLocals[v.Name] = string(v.Default.Bytes())
-			}
-
-			//Map variable
-			if v.Default != nil && string(v.Default.Bytes()) != `""` && strings.Contains(string(v.Type.Bytes()), "map") {
-				rawDefault := string(v.Default.Bytes())
-				rawDefault = strings.TrimSpace(rawDefault)
-				splittedRawString := strings.Split(rawDefault, "\n")
-
-				separator := "="
-				if strings.Contains(rawDefault, ":") {
-					separator = ":"
-				}
-
-				for i := range splittedRawString {
-					rawDataString := strings.Split(splittedRawString[i], separator)
-					propertyName := strings.TrimSpace(rawDataString[0])
-					if _, ok := out.Module[k].MapLocals[v.Name]; !ok {
-						out.Module[k].MapLocals[v.Name] = make(templates.ComplexVariableData)
-					}
-
-					out.Module[k].MapLocals[v.Name][propertyName] = ""
-				}
-			}
-
-			//Required Variable
-			if v.Default == nil || string(v.Default.Bytes()) == `""` {
-				out.Module[k].RequiredFields[v.Name] = ""
-			}
-		}
+		t.parseModule(m, moduleName, out)
 	}
+
 	path := t.mainTemplatePath
 	isDefault := true
-	if mainTemplatePath != "" {
+	if mainTemplatePath != emptyString {
 		path = mainTemplatePath
 		isDefault = false
 	}
 
 	return t.templateHandler.WriteTemplateToFile("module_main.tf", path, destinationPath, out, isDefault)
+}
+
+func (t *Terraform) parseModule(m *types.Module, moduleName string, out *templates.MainModuleTF) {
+	for _, v := range m.Variables {
+		// Simple variable
+		if v.Default != nil && string(v.Default.Bytes()) != emptyStringWrapped && !strings.Contains(string(v.Type.Bytes()), "map") {
+			out.Module[moduleName].SimpleLocals[v.Name] = string(v.Default.Bytes())
+		}
+
+		// Map variable
+		if v.Default != nil && string(v.Default.Bytes()) != emptyStringWrapped && strings.Contains(string(v.Type.Bytes()), "map") {
+			rawDefault := string(v.Default.Bytes())
+			rawDefault = strings.TrimSpace(rawDefault)
+			splittedRawString := strings.Split(rawDefault, "\n")
+
+			separator := "="
+			if strings.Contains(rawDefault, ":") {
+				separator = ":"
+			}
+
+			for i := range splittedRawString {
+				rawDataString := strings.Split(splittedRawString[i], separator)
+				propertyName := strings.TrimSpace(rawDataString[0])
+				if _, ok := out.Module[moduleName].MapLocals[v.Name]; !ok {
+					out.Module[moduleName].MapLocals[v.Name] = make(templates.ComplexVariableData)
+				}
+
+				out.Module[moduleName].MapLocals[v.Name][propertyName] = emptyString
+			}
+		}
+
+		// Required Variable
+		if v.Default == nil || string(v.Default.Bytes()) == emptyStringWrapped {
+			out.Module[moduleName].RequiredFields[v.Name] = ""
+		}
+	}
 }

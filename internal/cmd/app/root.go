@@ -26,7 +26,7 @@ type RootCommand struct {
 	Verbose bool
 }
 
-func NewRootCommand(logger logger.Logger) *RootCommand {
+func NewRootCommand(log logger.Logger) *RootCommand {
 	root := &RootCommand{}
 	root.Command = &cobra.Command{
 		Use:           "generate [command]",
@@ -35,7 +35,7 @@ func NewRootCommand(logger logger.Logger) *RootCommand {
 		SilenceUsage:  true,
 	}
 	root.Command.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-		root.log = logger
+		root.log = log
 
 		return nil
 	}

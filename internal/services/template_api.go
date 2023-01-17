@@ -22,13 +22,13 @@ import (
 	"github.com/AppsFlyer/terra-crust/internal/services/templates"
 )
 
-type TemplateApi struct {
-	ApiFuncMap *template.FuncMap
+type TemplateAPI struct {
+	APIFuncMap *template.FuncMap
 }
 
-func NewTemplateApi() *TemplateApi {
-	return &TemplateApi{
-		ApiFuncMap: &template.FuncMap{
+func NewTemplateAPI() *TemplateAPI {
+	return &TemplateAPI{
+		APIFuncMap: &template.FuncMap{
 			"SimpleWrap":        SimpleWrap,
 			"ModuleDataWrapper": ModuleDataWrapper,
 			"GetDefaults":       GetDefaults,
@@ -53,11 +53,11 @@ func SimpleWrap(moduleName string, moduleData map[string]string) map[string]inte
 func GetDefaults(moduleName string, modulesMap *templates.MainModuleTF) string {
 	var sb strings.Builder
 	for k := range modulesMap.Module[moduleName].SimpleLocals {
-		sb.WriteString(fmt.Sprintf(main_default_var_row_template, k, moduleName, k))
+		sb.WriteString(fmt.Sprintf(mainDefaultVarRowTemplate, k, moduleName, k))
 	}
 
 	for k := range modulesMap.Module[moduleName].MapLocals {
-		sb.WriteString(fmt.Sprintf(main_default_var_row_template, k, moduleName, k))
+		sb.WriteString(fmt.Sprintf(mainDefaultVarRowTemplate, k, moduleName, k))
 	}
 
 	return sb.String()

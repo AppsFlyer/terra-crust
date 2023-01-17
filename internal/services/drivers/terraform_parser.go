@@ -16,27 +16,31 @@ package drivers
 
 import (
 	"errors"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 
-	log "github.com/AppsFlyer/go-logger"
+	logger "github.com/AppsFlyer/go-logger"
 	"github.com/AppsFlyer/terra-crust/internal/types"
+
 	hcl "github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/zclconf/go-cty/cty"
 )
 
+const (
+	HclBlockDescriptionField = "description"
+	HclBlockValueField       = "value"
+)
+
 type TerraformParser struct {
-	logger log.Logger
+	logger logger.Logger
 }
 
-// newLocalParser return a new parser with local terraform module.
-func NewTerraformParser(logger log.Logger) Parser {
+func NewTerraformParser(log logger.Logger) Parser {
 	return &TerraformParser{
-		logger: logger,
+		logger: log,
 	}
 }
 
@@ -59,7 +63,7 @@ func (p *TerraformParser) Parse(path string) (map[string]*types.Module, error) {
 				return nil
 			}
 
-			src, err := ioutil.ReadFile(path)
+			src, err := os.ReadFile(path)
 			if err != nil {
 				p.logger.Error("Failed reading file under path, make sure files exist %s", err.Error())
 
@@ -73,7 +77,7 @@ func (p *TerraformParser) Parse(path string) (map[string]*types.Module, error) {
 
 			body := file.Body()
 			splittedPath := strings.Split(path, "/")
-			//Extracting module name based on folder file location
+			// Extracting module name based on folder file location
 			moduleName := splittedPath[len(splittedPath)-2]
 
 			if _, ok := modulesMap[moduleName]; !ok {
@@ -124,7 +128,7 @@ func (p *TerraformParser) parseVariable(block *hclwrite.Block) *types.Variable {
 			variable.Type = typeTokens
 		case "default":
 			variable.Default = v.Expr().BuildTokens(nil)
-		case "description":
+		case HclBlockDescriptionField:
 			description := string(v.Expr().BuildTokens(nil).Bytes())
 			variable.Description = description[2 : len(description)-1]
 		}
@@ -141,11 +145,11 @@ func (p *TerraformParser) parseOutput(block *hclwrite.Block) *types.Output {
 	body := block.Body()
 	for k, v := range body.Attributes() {
 		switch k {
-		case "value":
+		case HclBlockValueField:
 			var typeTokens hclwrite.Tokens
 			typeTokens = append(typeTokens, v.Expr().BuildTokens(nil)...)
 			output.Value = typeTokens
-		case "description":
+		case HclBlockDescriptionField:
 			description := string(v.Expr().BuildTokens(nil).Bytes())
 			output.Description = description[2 : len(description)-1]
 		}

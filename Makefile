@@ -2,7 +2,7 @@ SHELL := /bin/bash
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 export GO_VERSION ?= $(shell grep -E "^go " go.mod | awk -F' ' '{print $$2}' )
-export GOLANGCI_LINT_VERSION=v1.41.1
+export GOLANGCI_LINT_VERSION=v1.50.1
 export MAIN_GO=internal/cmd/main.go
 
 .PHONY: help
@@ -26,7 +26,8 @@ get-linter:		## Get golangci-lint
 lint: get-linter ## Run linter
 	$(info)
 	$(info ========[ $@ ]========)
-	golangci-lint run --fast --enable-all -D scopelint -D gocyclo -D godot -D funlen -D lll -D gocognit -D gofumpt -D wsl -D gomnd --skip-dirs-use-default
+	rm lint.xml
+	golangci-lint run
 
 test: ## Run go tests
 	$(info)

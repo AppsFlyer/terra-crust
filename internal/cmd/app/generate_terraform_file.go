@@ -22,7 +22,7 @@ import (
 )
 
 func generateTerraformFile(root *RootCommand, f func(modulesFilePath string, destinationPath string) error, short string) *cobra.Command {
-	var flags types.TFGenerateFlags = types.TFGenerateFlags{}
+	flags := types.TFGenerateFlags{}
 	cmd := &cobra.Command{
 		Use:     short,
 		Short:   fmt.Sprintf("create general object %s file", short),

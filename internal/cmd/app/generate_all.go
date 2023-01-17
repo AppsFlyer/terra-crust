@@ -20,7 +20,7 @@ import (
 )
 
 func generateAllFiles(root *RootCommand) *cobra.Command {
-	var flags types.TFGenerateFlags = types.TFGenerateFlags{}
+	flags := types.TFGenerateFlags{}
 	cmd := &cobra.Command{
 		Use:     "terraform-all",
 		Short:   "generate terraform locals , main and variables",
