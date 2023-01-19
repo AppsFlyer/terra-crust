@@ -26,7 +26,6 @@ get-linter:		## Get golangci-lint
 lint: get-linter ## Run linter
 	$(info)
 	$(info ========[ $@ ]========)
-	rm lint.xml
 	golangci-lint run
 
 test: ## Run go tests

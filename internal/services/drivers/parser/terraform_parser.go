@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package drivers
+package parser
 
 import (
 	"errors"
+	"github.com/AppsFlyer/terra-crust/internal/services/drivers"
 	"os"
 	"path/filepath"
 	"strings"
@@ -38,7 +39,7 @@ type TerraformParser struct {
 	logger logger.Logger
 }
 
-func NewTerraformParser(log logger.Logger) Parser {
+func NewTerraformParser(log logger.Logger) drivers.Parser {
 	return &TerraformParser{
 		logger: log,
 	}

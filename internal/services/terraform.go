@@ -62,22 +62,22 @@ func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPat
 
 	out := make(templates.VariblesModuleList)
 
-	for k, m := range moduleList {
+	for moduleName, m := range moduleList {
 		if len(m.Variables) == 0 {
 			continue
 		}
 
-		out[k] = &templates.VariablesModulesTF{
-			ModuleName:        k,
-			Description:       fmt.Sprintf(moduleDescription, k),
+		out[moduleName] = &templates.VariablesModulesTF{
+			ModuleName:        moduleName,
+			Description:       fmt.Sprintf(moduleDescription, moduleName),
 			ObjectTypeMapping: make(map[string]string, len(m.Variables)),
 			DefaultValues:     make(map[string]string, len(m.Variables)),
 		}
 
 		for _, v := range m.Variables {
 			if v.Default != nil && string(v.Default.Bytes()) != emptyStringWrapped {
-				out[k].ObjectTypeMapping[v.Name] = strings.ReplaceAll(string(v.Type.Bytes()), " ", emptyString)
-				out[k].DefaultValues[v.Name] = string(v.Default.Bytes())
+				out[moduleName].ObjectTypeMapping[v.Name] = strings.ReplaceAll(string(v.Type.Bytes()), " ", emptyString)
+				out[moduleName].DefaultValues[v.Name] = string(v.Default.Bytes())
 			}
 		}
 	}

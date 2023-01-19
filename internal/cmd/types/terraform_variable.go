@@ -18,4 +18,5 @@ type TFGenerateFlags struct {
 	SourcePath           string
 	DestinationPath      string
 	MainTemplateFilePath string
+	FetchRemote          bool
 }

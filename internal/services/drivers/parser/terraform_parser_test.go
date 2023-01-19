@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package drivers_test
+package parser_test
 
 import (
+	"github.com/AppsFlyer/terra-crust/internal/services/drivers/parser"
 	"testing"
 
 	logger "github.com/AppsFlyer/go-logger"
-	"github.com/AppsFlyer/terra-crust/internal/services/drivers"
 )
 
 func TestParse(t *testing.T) {
 	t.Parallel()
 	log := logger.NewSimple()
-	parser := drivers.NewTerraformParser(log)
+	parserDriver := parser.NewTerraformParser(log)
 
-	m, err := parser.Parse("../../../mock/modules")
+	m, err := parserDriver.Parse("../../../mock/modules")
 	if err != nil {
 		t.Errorf("failed to parse , reason: %s", err.Error())
 	}
@@ -47,9 +47,9 @@ func TestParse(t *testing.T) {
 func TestParseBadPath(t *testing.T) {
 	t.Parallel()
 	log := logger.NewSimple()
-	parser := drivers.NewTerraformParser(log)
+	parserDriver := parser.NewTerraformParser(log)
 
-	m, err := parser.Parse("../../../internal")
+	m, err := parserDriver.Parse("../../../internal")
 	if err != nil {
 		t.Errorf("failed to parse , reason: %s", err.Error())
 	}
@@ -62,9 +62,9 @@ func TestParseBadPath(t *testing.T) {
 func TestParseNotExistingPath(t *testing.T) {
 	t.Parallel()
 	log := logger.NewSimple()
-	parser := drivers.NewTerraformParser(log)
+	parserDriver := parser.NewTerraformParser(log)
 
-	_, err := parser.Parse("../../internal")
+	_, err := parserDriver.Parse("../../internal")
 	if err == nil {
 		t.Errorf("Expected error for bad route")
 	}
