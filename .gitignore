@@ -2,3 +2,6 @@ main
 main.tmpl
 config
 bin/*
+.idea
+*.DS_Store
+.DS_Store
