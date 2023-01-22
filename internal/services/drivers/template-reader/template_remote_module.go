@@ -11,9 +11,10 @@ import (
 )
 
 const (
-	gitSourceLineRegex = "source\\s*=\\s*git::"
-	moduleNameRegex    = `\/([^\/]+)\.git(?:[^\/]*|$)`
-	moduleUrlRegex     = "git::(https?:\\/\\/[^\\/]+\\/[^?]+.git)"
+	gitSourceLineRegex = "source\\s*=\\s*\"git::"
+	moduleNameRegex    = `.*\/([^?]+)`
+	gitUrlRegex        = `(https?:\/\/.+\/.+\.git)`
+	gitUrlRegexVersion = `(https?:\/\/[^/]+\/[^?]+)`
 )
 
 type KeyValueString struct {
@@ -44,7 +45,12 @@ func (trm *TemplateRemoteModule) GetRemoteModulesFromTemplate(templatePath strin
 
 		return nil, err
 	}
-	defer file.Close()
+	defer func() {
+		err := file.Close()
+		if err != nil {
+			trm.log.Errorf("Failed to close properly the main tmpl , error: %s", err.Error())
+		}
+	}()
 
 	b, err := io.ReadAll(file)
 	if err != nil {
@@ -83,15 +89,24 @@ func (trm *TemplateRemoteModule) parseLineIntoRemoteModule(line string) (*KeyVal
 	re := regexp.MustCompile(moduleNameRegex)
 	match := re.FindStringSubmatch(line)
 	if len(match) <= 1 {
-		return nil, errors.New("Failed to fetch module Name from source")
+		return nil, errors.New("failed to fetch module Name from source")
 	}
-	moduleName := match[1]
+	moduleName := strings.TrimSuffix(match[1], "\"")
 
-	re = regexp.MustCompile(moduleUrlRegex)
-	match = re.FindStringSubmatch(line)
-	if len(match) <= 1 {
-		return nil, errors.New("Failed to fetch module URL from source")
+	urlReg := regexp.MustCompile(gitUrlRegex)
+	urlVersionReg := regexp.MustCompile(gitUrlRegexVersion)
+	urlMatch := urlReg.FindStringSubmatch(line)
+	urlVersionMatch := urlVersionReg.FindStringSubmatch(line)
+
+	if len(urlMatch) < 1 && len(urlVersionMatch) < 1 {
+		return nil, errors.New("failed to fetch module URL from source")
 	}
-	gitUrl := strings.TrimPrefix(match[1], "git::")
+
+	if len(urlMatch) >= 1 {
+		gitUrl := strings.TrimSuffix(urlMatch[1], "\"")
+		return &KeyValueString{Key: moduleName, Value: gitUrl}, nil
+	}
+	gitUrl := strings.TrimSuffix(urlVersionMatch[1], "\"")
+
 	return &KeyValueString{Key: moduleName, Value: gitUrl}, nil
 }

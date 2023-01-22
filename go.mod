@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/AppsFlyer/go-logger v1.1.1
 	github.com/go-git/go-git/v5 v5.4.2
+	github.com/go-test/deep v1.0.3
 	github.com/hashicorp/go-version v1.6.0
 	github.com/hashicorp/hc-install v0.4.0
 	github.com/hashicorp/hcl/v2 v2.15.0

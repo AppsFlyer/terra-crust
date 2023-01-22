@@ -4,25 +4,28 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"os"
+	"strings"
 
 	log "github.com/AppsFlyer/go-logger"
 	"github.com/go-git/go-git/v5" /// with go modules disabled
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 )
 
-const TerraformPath = "%s/%s"
+const (
+	TerraformPath  = "%s/%s"
+	GitlabTokenENV = "GITLAB_TOKEN"
+	GithubTokenENV = "GITHUB_TOKEN"
+	GitlabUserENV  = "GITLAB_USER"
+	GithubUserENV  = "GITHUB_USER"
+)
 
 type Git struct {
-	log      log.Logger
-	UserName string
-	Token    string
+	log log.Logger
 }
 
-func InitGitProvider(log log.Logger, userName, token string) *Git {
+func InitGitProvider(log log.Logger) *Git {
 	return &Git{
-		log:      log,
-		UserName: userName,
-		Token:    token,
+		log: log,
 	}
 }
 
@@ -55,11 +58,24 @@ func (g *Git) CleanModulesFolders(modules map[string]string, modulesSource strin
 }
 
 func (g *Git) clone(url, path string) error {
+	userName, token := g.getGitUserNameAndToken(url)
 	_, err := git.PlainClone(path, false, &git.CloneOptions{
 		URL:      url,
 		Progress: os.Stdout,
-		Auth:     &http.BasicAuth{Password: g.Token, Username: g.UserName},
+		Auth:     &http.BasicAuth{Password: token, Username: userName},
 	})
 
 	return err
+}
+
+func (g *Git) getGitUserNameAndToken(url string) (string, string) {
+	if strings.Contains(url, "gitlab") {
+		return os.Getenv(GitlabUserENV), os.Getenv(GitlabTokenENV)
+	}
+
+	if strings.Contains(url, "github") {
+		return os.Getenv(GithubUserENV), os.Getenv(GithubTokenENV)
+	}
+
+	return "", ""
 }

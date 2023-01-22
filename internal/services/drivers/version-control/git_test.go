@@ -21,7 +21,7 @@ func TestCloneAndCleanup(t *testing.T) {
 	t.Parallel()
 	log := logger.NewSimple()
 
-	gitDriver := version_control.InitGitProvider(log, os.Getenv("GIT_USER"), os.Getenv("GIT_TOKEN"))
+	gitDriver := version_control.InitGitProvider(log)
 
 	err := gitDriver.CloneModules(mockModules, ModulesTestPath)
 	if err != nil {
@@ -57,7 +57,6 @@ func TestCloneAndCleanup(t *testing.T) {
 	if len(folders) != 0 {
 		t.Errorf("Expected 0 folder count received %d", len(folders))
 	}
-
 }
 
 func getFolderAsMap(path string) (map[string]struct{}, error) {
