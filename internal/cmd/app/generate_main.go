@@ -19,7 +19,6 @@ import (
 	template_reader "github.com/AppsFlyer/terra-crust/internal/services/drivers/template-reader"
 	version_control "github.com/AppsFlyer/terra-crust/internal/services/drivers/version-control"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 func generateMain(root *RootCommand) *cobra.Command {
@@ -33,7 +32,7 @@ func generateMain(root *RootCommand) *cobra.Command {
 
 			terraformSvc := InitTerraformGeneratorService(log)
 			templateReader := template_reader.InitTemplateRemoteModule(log)
-			gitDriver := version_control.InitGitProvider(log, os.Getenv("GIT_USER"), os.Getenv("GIT_TOKEN"))
+			gitDriver := version_control.InitGitProvider(log)
 
 			if flags.FetchRemote && flags.MainTemplateFilePath != "" {
 				remoteModulesMap, err := templateReader.GetRemoteModulesFromTemplate(flags.MainTemplateFilePath)
