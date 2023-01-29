@@ -19,6 +19,7 @@ import (
 	template_reader "github.com/AppsFlyer/terra-crust/internal/services/drivers/template-reader"
 	version_control "github.com/AppsFlyer/terra-crust/internal/services/drivers/version-control"
 	"github.com/spf13/cobra"
+	"time"
 )
 
 func generateMain(root *RootCommand) *cobra.Command {
@@ -35,6 +36,7 @@ func generateMain(root *RootCommand) *cobra.Command {
 			gitDriver := version_control.InitGitProvider(log)
 
 			if flags.FetchRemote && flags.MainTemplateFilePath != "" {
+				log.Infof("Searching for remote modules")
 				remoteModulesMap, err := templateReader.GetRemoteModulesFromTemplate(flags.MainTemplateFilePath)
 				if err != nil {
 					log.Error("Failed parsing remote modules from custom template", err.Error())
@@ -42,17 +44,24 @@ func generateMain(root *RootCommand) *cobra.Command {
 					return err
 				}
 
+				log.Infof("found remote modules: ", remoteModulesMap)
+
 				if err = gitDriver.CloneModules(remoteModulesMap, flags.SourcePath); err != nil {
 					log.Error("Failed cloning remote modules ", err.Error())
 
 					return err
 				}
+
+				time.Sleep(1 * time.Minute)
+
 				defer func() {
 					if err = gitDriver.CleanModulesFolders(remoteModulesMap, flags.SourcePath); err != nil {
 						log.Errorf("Failed to clean up some of the remote resources please make sure to clean it manually and check the error , %s", err.Error())
 					}
 				}()
 			}
+
+			log.Infof("remote not found ")
 
 			if err := terraformSvc.GenerateMain(flags.SourcePath, flags.DestinationPath, flags.MainTemplateFilePath); err != nil {
 				log.Error("Failed generating the terraform main file", err.Error())

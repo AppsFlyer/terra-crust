@@ -1,6 +1,7 @@
 package template_reader_test
 
 import (
+	version_control "github.com/AppsFlyer/terra-crust/internal/services/drivers/version-control"
 	"github.com/go-test/deep"
 	"testing"
 
@@ -8,11 +9,12 @@ import (
 	tmplReader "github.com/AppsFlyer/terra-crust/internal/services/drivers/template-reader"
 )
 
-var result = map[string]string{
-	"moduleName":        "https://gitlab.domain.com/sub/sub/modules/moduleName",
-	"moduleWithVersion": "https://github.com/AppsFlyer/terra-crust/random/long/path//moduleWithVersion",
-	"terra-crust":       "https://github.com/AppsFlyer/terra-crust",
-	"naming":            "https://github.domain.com/test/terraform/modules/naming.git",
+var result = map[string]*version_control.RemoteModule{
+	"terra-crust":    {Name: "terra-crust", Url: "https://github.com/AppsFlyer/terra-crust", Version: "", Path: ""},
+	"naming":         {Name: "naming", Url: "https://github.domain.com/test/terraform/modules/naming.git", Version: "0.2.1", Path: "modules/naming"},
+	"otel-collector": {Name: "otel-collector", Url: "https://github.com/streamnative/terraform-helm-charts.git", Version: "v0.2.1", Path: "modules/otel-collector"},
+	"iam-account":    {Name: "iam-account", Path: "modules/iam-account", Url: "https://github.com/terraform-aws-modules/terraform-aws-iam.git", Version: ""},
+	"zones":          {Name: "zones", Path: "modules/zones", Url: "https://github.com/terraform-aws-modules/terraform-aws-route53.git", Version: ""},
 }
 
 func TestGetRemoteModulesFromTemplate(t *testing.T) {
@@ -25,12 +27,11 @@ func TestGetRemoteModulesFromTemplate(t *testing.T) {
 		t.Errorf("failed to extract sources from template %s", err.Error())
 	}
 
-	if len(modules) != 4 {
-		t.Errorf("Expected 4 modules found : %d", len(modules))
+	if len(modules) != 5 {
+		t.Errorf("Expected 5 modules found : %d", len(modules))
 	}
 
 	if diff := deep.Equal(modules, result); diff != nil {
 		t.Errorf("expected result to be equal, result is different : %s", diff)
 	}
-
 }

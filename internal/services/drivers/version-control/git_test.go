@@ -13,8 +13,10 @@ const (
 	ModulesTestPath      = "./temp-git-test"
 )
 
-var mockModules = map[string]string{
-	TerraCrustModuleName: TerraCrustURL,
+var mockModules = map[string]*version_control.RemoteModule{
+	TerraCrustModuleName: {
+		Url: TerraCrustURL,
+	},
 }
 
 func TestCloneAndCleanup(t *testing.T) {

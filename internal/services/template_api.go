@@ -32,6 +32,7 @@ func NewTemplateAPI() *TemplateAPI {
 			"SimpleWrap":        SimpleWrap,
 			"ModuleDataWrapper": ModuleDataWrapper,
 			"GetDefaults":       GetDefaults,
+			"GetRequired":       GetRequired,
 		},
 	}
 }
@@ -58,6 +59,15 @@ func GetDefaults(moduleName string, modulesMap *templates.MainModuleTF) string {
 
 	for k := range modulesMap.Module[moduleName].MapLocals {
 		sb.WriteString(fmt.Sprintf(mainDefaultVarRowTemplate, k, moduleName, k))
+	}
+
+	return sb.String()
+}
+
+func GetRequired(moduleName string, modulesMap *templates.MainModuleTF) string {
+	var sb strings.Builder
+	for k := range modulesMap.Module[moduleName].SimpleLocals {
+		sb.WriteString(fmt.Sprintf(mainRequiredVarRowTemplate, k))
 	}
 
 	return sb.String()

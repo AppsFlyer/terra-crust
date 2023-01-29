@@ -19,3 +19,21 @@ module "zookeeper" {
   # Configurable Variables - Optinal Fields 
   {{(GetDefaults "consul_sync" .)}}
 }
+
+module "zones" {
+ source = "git::https://github.com/terraform-aws-modules/terraform-aws-route53.git/modules/zones"
+
+ {{(GetDefaults "zones" .)}}
+}
+
+module "terraform-aws-resource-naming" {
+ source = "git::https://github.com/traveloka/terraform-aws-resource-naming"
+
+ {{(GetDefaults "terraform-aws-resource-naming" .)}}
+}
+
+module "iam-account" {
+  source            = "git::https://github.com/terraform-aws-modules/terraform-aws-iam.git/modules/iam-account"
+
+{{(GetDefaults "iam-account" .)}}
+}

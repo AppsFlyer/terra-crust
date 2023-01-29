@@ -27,9 +27,10 @@ const (
 	moduleDescription = `<<EOT
 	(Optional) %s Module will be used by default.
 	EOT`
-	mainDefaultVarRowTemplate = "%s = local.%s.%s \n"
-	emptyString               = ""
-	emptyStringWrapped        = `""`
+	mainDefaultVarRowTemplate  = "%s = local.%s.%s \n"
+	mainRequiredVarRowTemplate = "# %s = module. TODO: Add Required Field "
+	emptyString                = ""
+	emptyStringWrapped         = `""`
 )
 
 type Terraform struct {
@@ -135,8 +136,8 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 					}
 
 					// if property name is none string
-					if !strings.Contains(propertyName, emptyStringWrapped) {
-						propertyName = fmt.Sprintf(`"%q"`, propertyName)
+					if !strings.Contains(propertyName, `"`) {
+						propertyName = fmt.Sprintf(`"%s"`, propertyName)
 					}
 
 					if _, ok := out.Module[k].MapLocals[v.Name]; !ok {

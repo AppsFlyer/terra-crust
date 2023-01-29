@@ -2,6 +2,7 @@ package template_reader
 
 import (
 	"errors"
+	version_control "github.com/AppsFlyer/terra-crust/internal/services/drivers/version-control"
 	"io"
 	"os"
 	"regexp"
@@ -15,30 +16,27 @@ const (
 	moduleNameRegex    = `.*\/([^?]+)`
 	gitUrlRegex        = `(https?:\/\/.+\/.+\.git)`
 	gitUrlRegexVersion = `(https?:\/\/[^/]+\/[^?]+)`
+	versionRegex       = `/?ref=(.*)"`
+	modulePathRegex    = `.git[\/]+([^\/][^\?]+)[\?]{0,1}.*["$]`
 )
-
-type KeyValueString struct {
-	Key   string
-	Value string
-}
 
 type TemplateRemoteModule struct {
 	log     log.Logger
-	modules map[string]string
+	modules map[string]*version_control.RemoteModule
 }
 
 func InitTemplateRemoteModule(log log.Logger) *TemplateRemoteModule {
 	return &TemplateRemoteModule{
 		log:     log,
-		modules: make(map[string]string),
+		modules: make(map[string]*version_control.RemoteModule),
 	}
 }
 
-func (trm *TemplateRemoteModule) GetRemoteModulesFromCache() map[string]string {
+func (trm *TemplateRemoteModule) GetRemoteModulesFromCache() map[string]*version_control.RemoteModule {
 	return trm.modules
 }
 
-func (trm *TemplateRemoteModule) GetRemoteModulesFromTemplate(templatePath string) (map[string]string, error) {
+func (trm *TemplateRemoteModule) GetRemoteModulesFromTemplate(templatePath string) (map[string]*version_control.RemoteModule, error) {
 	file, err := os.Open(templatePath)
 	if err != nil {
 		trm.log.Error("Failed to open template to fetch remote modules,make sure you have a custom template when using this feature")
@@ -79,13 +77,13 @@ func (trm *TemplateRemoteModule) GetRemoteModulesFromTemplate(templatePath strin
 			return nil, err
 		}
 
-		trm.modules[kv.Key] = kv.Value
+		trm.modules[kv.Name] = kv
 	}
 
 	return trm.modules, nil
 }
 
-func (trm *TemplateRemoteModule) parseLineIntoRemoteModule(line string) (*KeyValueString, error) {
+func (trm *TemplateRemoteModule) parseLineIntoRemoteModule(line string) (*version_control.RemoteModule, error) {
 	re := regexp.MustCompile(moduleNameRegex)
 	match := re.FindStringSubmatch(line)
 	if len(match) <= 1 {
@@ -102,11 +100,27 @@ func (trm *TemplateRemoteModule) parseLineIntoRemoteModule(line string) (*KeyVal
 		return nil, errors.New("failed to fetch module URL from source")
 	}
 
+	versReg := regexp.MustCompile(versionRegex)
+	verMatch := versReg.FindStringSubmatch(line)
+	version := ""
+	if len(verMatch) >= 1 {
+		version = verMatch[1]
+	}
+
+	modulePathReg := regexp.MustCompile(modulePathRegex)
+	modulePathMatch := modulePathReg.FindStringSubmatch(line)
+	modulePath := ""
+	if len(modulePathMatch) >= 1 {
+		modulePath = modulePathMatch[1]
+	}
+
 	if len(urlMatch) >= 1 {
 		gitUrl := strings.TrimSuffix(urlMatch[1], "\"")
-		return &KeyValueString{Key: moduleName, Value: gitUrl}, nil
+
+		return &version_control.RemoteModule{Name: moduleName, Url: gitUrl, Version: version, Path: modulePath}, nil
 	}
+
 	gitUrl := strings.TrimSuffix(urlVersionMatch[1], "\"")
 
-	return &KeyValueString{Key: moduleName, Value: gitUrl}, nil
+	return &version_control.RemoteModule{Name: moduleName, Url: gitUrl, Version: version, Path: modulePath}, nil
 }
