@@ -26,7 +26,7 @@ func TestParse(t *testing.T) {
 	log := logger.NewSimple()
 	parserDriver := parser.NewTerraformParser(log)
 
-	m, err := parserDriver.Parse("../../../mock/modules")
+	m, err := parserDriver.Parse("../../../../mock/modules")
 	if err != nil {
 		t.Errorf("failed to parse , reason: %s", err.Error())
 	}
@@ -49,7 +49,7 @@ func TestParseBadPath(t *testing.T) {
 	log := logger.NewSimple()
 	parserDriver := parser.NewTerraformParser(log)
 
-	m, err := parserDriver.Parse("../../../internal")
+	m, err := parserDriver.Parse("../../../../internal")
 	if err != nil {
 		t.Errorf("failed to parse , reason: %s", err.Error())
 	}
@@ -64,7 +64,7 @@ func TestParseNotExistingPath(t *testing.T) {
 	log := logger.NewSimple()
 	parserDriver := parser.NewTerraformParser(log)
 
-	_, err := parserDriver.Parse("../../internal")
+	_, err := parserDriver.Parse("../../../internal")
 	if err == nil {
 		t.Errorf("Expected error for bad route")
 	}
