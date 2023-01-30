@@ -23,24 +23,27 @@ module "zookeeper" {
 module "zones" {
  source = "git::https://github.com/terraform-aws-modules/terraform-aws-route53.git/modules/zones"
 
+ # Dependency Injection - Required Fields
  {{(GetRequired "zones" .)}}
 
+ # Configurable Variables - Optinal Fields
  {{(GetDefaults "zones" .)}}
 }
 
 module "terraform-aws-resource-naming" {
  source = "git::https://github.com/traveloka/terraform-aws-resource-naming?ref=v0.23.1"
 
+ # Dependency Injection - Required Fields
  {{(GetRequired "terraform-aws-resource-naming" .)}}
 
+ # Configurable Variables - Optinal Fields
  {{(GetDefaults "terraform-aws-resource-naming" .)}}
 }
 
 module "iam-account" {
   source            = "git::https://github.com/terraform-aws-modules/terraform-aws-iam.git/modules/iam-account"
 
-
  {{(GetRequired "iam-account" .)}}
 
-{{(GetDefaults "iam-account" .)}}
+ {{(GetDefaults "iam-account" .)}}
 }

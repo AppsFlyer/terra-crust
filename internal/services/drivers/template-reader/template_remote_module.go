@@ -32,10 +32,6 @@ func InitTemplateRemoteModule(log log.Logger) *TemplateRemoteModule {
 	}
 }
 
-func (trm *TemplateRemoteModule) GetRemoteModulesFromCache() map[string]*version_control.RemoteModule {
-	return trm.modules
-}
-
 func (trm *TemplateRemoteModule) GetRemoteModulesFromTemplate(templatePath string) (map[string]*version_control.RemoteModule, error) {
 	file, err := os.Open(templatePath)
 	if err != nil {
@@ -70,14 +66,14 @@ func (trm *TemplateRemoteModule) GetRemoteModulesFromTemplate(templatePath strin
 			continue
 		}
 
-		kv, err := trm.parseLineIntoRemoteModule(line)
+		remoteModule, err := trm.parseLineIntoRemoteModule(line)
 		if err != nil {
 			trm.log.Error("Failed to parse remote Source value from template")
 
 			return nil, err
 		}
 
-		trm.modules[kv.Name] = kv
+		trm.modules[remoteModule.Name] = remoteModule
 	}
 
 	return trm.modules, nil

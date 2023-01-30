@@ -61,7 +61,7 @@ func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPat
 		return err
 	}
 
-	out := make(templates.VariblesModuleList)
+	out := make(templates.VariablesModuleList)
 
 	for moduleName, m := range moduleList {
 		if len(m.Variables) == 0 {

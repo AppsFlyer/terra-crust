@@ -14,7 +14,7 @@
 
 package templates
 
-type VariblesModuleList map[string]*VariablesModulesTF
+type VariablesModuleList map[string]*VariablesModulesTF
 
 type VariablesModulesTF struct {
 	ModuleName        string
