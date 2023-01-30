@@ -66,7 +66,7 @@ func GetDefaults(moduleName string, modulesMap *templates.MainModuleTF) string {
 
 func GetRequired(moduleName string, modulesMap *templates.MainModuleTF) string {
 	var sb strings.Builder
-	for k := range modulesMap.Module[moduleName].SimpleLocals {
+	for k := range modulesMap.Module[moduleName].RequiredFields {
 		sb.WriteString(fmt.Sprintf(mainRequiredVarRowTemplate, k))
 	}
 

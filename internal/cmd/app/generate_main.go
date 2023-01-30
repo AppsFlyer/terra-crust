@@ -19,7 +19,6 @@ import (
 	template_reader "github.com/AppsFlyer/terra-crust/internal/services/drivers/template-reader"
 	version_control "github.com/AppsFlyer/terra-crust/internal/services/drivers/version-control"
 	"github.com/spf13/cobra"
-	"time"
 )
 
 func generateMain(root *RootCommand) *cobra.Command {
@@ -51,8 +50,6 @@ func generateMain(root *RootCommand) *cobra.Command {
 
 					return err
 				}
-
-				time.Sleep(1 * time.Minute)
 
 				defer func() {
 					if err = gitDriver.CleanModulesFolders(remoteModulesMap, flags.SourcePath); err != nil {

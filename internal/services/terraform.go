@@ -28,7 +28,7 @@ const (
 	(Optional) %s Module will be used by default.
 	EOT`
 	mainDefaultVarRowTemplate  = "%s = local.%s.%s \n"
-	mainRequiredVarRowTemplate = "# %s = module. TODO: Add Required Field "
+	mainRequiredVarRowTemplate = "# %s = module. TODO: Add Required Field \n"
 	emptyString                = ""
 	emptyStringWrapped         = `""`
 )
