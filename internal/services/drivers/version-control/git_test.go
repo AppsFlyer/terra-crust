@@ -9,7 +9,7 @@ import (
 
 const (
 	TerraCrustModuleName = "terracrust"
-	NamigModuleName      = "terraform-aws-resource-naming"
+	NamingModuleName     = "terraform-aws-resource-naming"
 	ZonesModuleName      = "zones"
 	TerraCrustURL        = "https://github.com/AppsFlyer/terra-crust"
 
@@ -20,7 +20,7 @@ var mockModules = map[string]*version_control.RemoteModule{
 	TerraCrustModuleName: {
 		Url: TerraCrustURL,
 	},
-	NamigModuleName: {
+	NamingModuleName: {
 		Url:     "https://github.com/traveloka/terraform-aws-resource-naming",
 		Version: "v0.23.1",
 	},
@@ -59,7 +59,7 @@ func TestCloneAndCleanup(t *testing.T) {
 		t.Errorf("Clone failed , did not find zones")
 	}
 
-	if _, exist := folders[NamigModuleName]; !exist {
+	if _, exist := folders[NamingModuleName]; !exist {
 		t.Errorf("Clone failed , did not find naming")
 	}
 
@@ -84,7 +84,7 @@ func TestCloneAndCleanup(t *testing.T) {
 		t.Errorf("cleanup-failed zones folder still exists")
 	}
 
-	if _, exist := folders[NamigModuleName]; exist {
+	if _, exist := folders[NamingModuleName]; exist {
 		t.Errorf("cleanup-failed naming folder still exists")
 	}
 
