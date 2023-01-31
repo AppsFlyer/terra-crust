@@ -80,15 +80,33 @@ func (trm *TemplateRemoteModule) GetRemoteModulesFromTemplate(templatePath strin
 }
 
 func (trm *TemplateRemoteModule) parseLineIntoRemoteModule(line string) (*version_control.RemoteModule, error) {
-	re := regexp.MustCompile(moduleNameRegex)
+	re, err := regexp.Compile(moduleNameRegex)
+	if err != nil {
+		trm.log.Errorf("failed to compile regex: %s ", moduleNameRegex)
+
+		return nil, err
+	}
+
 	match := re.FindStringSubmatch(line)
 	if len(match) <= 1 {
 		return nil, errors.New("failed to fetch module Name from source")
 	}
 	moduleName := strings.TrimSuffix(match[1], "\"")
 
-	urlReg := regexp.MustCompile(gitUrlRegex)
-	urlVersionReg := regexp.MustCompile(gitUrlRegexVersion)
+	urlReg, err := regexp.Compile(gitUrlRegex)
+	if err != nil {
+		trm.log.Errorf("failed to compile regex: %s ", gitUrlRegex)
+
+		return nil, err
+	}
+
+	urlVersionReg, err := regexp.Compile(gitUrlRegexVersion)
+	if err != nil {
+		trm.log.Errorf("failed to compile regex: %s ", gitUrlRegexVersion)
+
+		return nil, err
+	}
+
 	urlMatch := urlReg.FindStringSubmatch(line)
 	urlVersionMatch := urlVersionReg.FindStringSubmatch(line)
 
@@ -111,12 +129,12 @@ func (trm *TemplateRemoteModule) parseLineIntoRemoteModule(line string) (*versio
 	}
 
 	if len(urlMatch) >= 1 {
-		gitUrl := strings.TrimSuffix(urlMatch[1], "\"")
+		gitUrl := strings.TrimSuffix(urlMatch[1], `"`)
 
 		return &version_control.RemoteModule{Name: moduleName, Url: gitUrl, Version: version, Path: modulePath}, nil
 	}
 
-	gitUrl := strings.TrimSuffix(urlVersionMatch[1], "\"")
+	gitUrl := strings.TrimSuffix(urlVersionMatch[1], `"`)
 
 	return &version_control.RemoteModule{Name: moduleName, Url: gitUrl, Version: version, Path: modulePath}, nil
 }

@@ -12,12 +12,12 @@ import (
 )
 
 const (
-	FolderPath     = "%s/%s"
-	TempFolderPath = "%s/temp/%s"
-	GitlabTokenENV = "GITLAB_TOKEN"
-	GithubTokenENV = "GITHUB_TOKEN"
-	GitlabUserENV  = "GITLAB_USER"
-	GithubUserENV  = "GITHUB_USER"
+	FolderPathFormat = "%s/%s"
+	TempFolderPath   = "%s/temp_clone_path/%s"
+	GitlabTokenENV   = "GITLAB_TOKEN"
+	GithubTokenENV   = "GITHUB_TOKEN"
+	GitlabUserENV    = "GITLAB_USER"
+	GithubUserENV    = "GITHUB_USER"
 )
 
 type RemoteModule struct {
@@ -39,21 +39,21 @@ func InitGitProvider(log log.Logger) *Git {
 
 func (g *Git) CloneModules(modules map[string]*RemoteModule, modulesSource string) error {
 	for moduleName, moduleData := range modules {
-		clonePath := fmt.Sprintf(FolderPath, modulesSource, moduleName)
+		clonePath := fmt.Sprintf(FolderPathFormat, modulesSource, moduleName)
 		if moduleData.Path != "" {
 			clonePath = fmt.Sprintf(TempFolderPath, modulesSource, moduleName)
 		}
 
 		if err := g.clone(moduleData, clonePath); err != nil {
-			return errors.Wrap(err, fmt.Sprintf("failed to fetch module , url: %s", moduleData.Url))
+			return errors.Wrapf(err, "failed to fetch module , url: %s", moduleData.Url)
 		}
 
-		g.log.Infof("Copy folder from : %s to : %s", fmt.Sprintf("%s/%s", clonePath, moduleData.Path), modulesSource)
+		g.log.Infof("Copy folder from : %s/%s to : %s", clonePath, moduleData.Path, modulesSource)
 
 		if moduleData.Path != "" {
-			modulePath := fmt.Sprintf(FolderPath, modulesSource, moduleName)
+			modulePath := fmt.Sprintf(FolderPathFormat, modulesSource, moduleName)
 
-			err := cp.Copy(fmt.Sprintf(FolderPath, clonePath, moduleData.Path), modulePath)
+			err := cp.Copy(fmt.Sprintf(FolderPathFormat, clonePath, moduleData.Path), modulePath)
 			if err != nil {
 				g.log.Errorf("failed to copy desired terraform module module path :%s, module name: %s", clonePath, moduleData.Name)
 			}
@@ -83,6 +83,7 @@ func (g *Git) clone(moduleData *RemoteModule, directoryPath string) error {
 		Progress:   os.Stdout,
 		Auth:       &http.BasicAuth{Password: token, Username: userName},
 		RemoteName: remoteName,
+		Depth:      1,
 	})
 
 	return err
@@ -91,7 +92,7 @@ func (g *Git) clone(moduleData *RemoteModule, directoryPath string) error {
 func (g *Git) CleanModulesFolders(modules map[string]*RemoteModule, modulesSource string) error {
 	var returnedErr error = nil
 	for moduleName := range modules {
-		modulePath := fmt.Sprintf(FolderPath, modulesSource, moduleName)
+		modulePath := fmt.Sprintf(FolderPathFormat, modulesSource, moduleName)
 
 		err := os.RemoveAll(modulePath)
 		if err != nil {
@@ -108,7 +109,7 @@ func (g *Git) CleanModulesFolders(modules map[string]*RemoteModule, modulesSourc
 }
 
 func (g *Git) cleanTemp(modulesSourcePath string) error {
-	tempPath := fmt.Sprintf("%s/temp", modulesSourcePath)
+	tempPath := fmt.Sprintf("%s/temp_clone_path", modulesSourcePath)
 
 	g.log.Infof("Deleting temp folder containing all clones")
 
