@@ -35,3 +35,15 @@ func TestGetRemoteModulesFromTemplate(t *testing.T) {
 		t.Errorf("expected result to be equal, result is different : %s", diff)
 	}
 }
+
+func TestBadPath(t *testing.T) {
+	t.Parallel()
+	log := logger.NewSimple()
+	templateReader := tmplReader.InitTemplateRemoteModule(log)
+
+	_, err := templateReader.GetRemoteModulesFromTemplate("./main.tmpl")
+	if err == nil {
+		t.Errorf("expected to have error for no file found")
+	}
+
+}
