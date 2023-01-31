@@ -2,7 +2,7 @@ package version_control_test
 
 import (
 	logger "github.com/AppsFlyer/go-logger"
-	version_control "github.com/AppsFlyer/terra-crust/internal/services/drivers/version-control"
+	version_control "github.com/AppsFlyer/terra-crust/internal/services/drivers/version_control"
 	"os"
 	"testing"
 )

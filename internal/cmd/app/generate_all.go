@@ -18,8 +18,8 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/AppsFlyer/terra-crust/internal/cmd/types"
-	template_reader "github.com/AppsFlyer/terra-crust/internal/services/drivers/template-reader"
-	version_control "github.com/AppsFlyer/terra-crust/internal/services/drivers/version-control"
+	template_reader "github.com/AppsFlyer/terra-crust/internal/services/drivers/template_reader"
+	version_control "github.com/AppsFlyer/terra-crust/internal/services/drivers/version_control"
 )
 
 func generateAllFiles(root *RootCommand) *cobra.Command {

@@ -1,12 +1,12 @@
 package template_reader_test
 
 import (
-	version_control "github.com/AppsFlyer/terra-crust/internal/services/drivers/version-control"
+	version_control "github.com/AppsFlyer/terra-crust/internal/services/drivers/version_control"
 	"github.com/go-test/deep"
 	"testing"
 
 	logger "github.com/AppsFlyer/go-logger"
-	tmplReader "github.com/AppsFlyer/terra-crust/internal/services/drivers/template-reader"
+	tmplReader "github.com/AppsFlyer/terra-crust/internal/services/drivers/template_reader"
 )
 
 var result = map[string]*version_control.RemoteModule{

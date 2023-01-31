@@ -2,7 +2,7 @@ package template_reader
 
 import (
 	"errors"
-	version_control "github.com/AppsFlyer/terra-crust/internal/services/drivers/version-control"
+	version_control "github.com/AppsFlyer/terra-crust/internal/services/drivers/version_control"
 	"io"
 	"os"
 	"regexp"
