@@ -14,10 +14,10 @@ import (
 const (
 	FolderPathFormat = "%s/%s"
 	TempFolderPath   = "%s/temp_clone_path/%s"
-	GitlabTokenENV   = "GITLAB_TOKEN"
-	GithubTokenENV   = "GITHUB_TOKEN"
-	GitlabUserENV    = "GITLAB_USER"
-	GithubUserENV    = "GITHUB_USER"
+	GitlabTokenENV   = ""
+	GithubTokenENV   = ""
+	GitlabUserENV    = ""
+	GithubUserENV    = ""
 )
 
 type RemoteModule struct {
