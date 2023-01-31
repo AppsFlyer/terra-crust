@@ -73,7 +73,7 @@ func generateMain(root *RootCommand) *cobra.Command {
 	cmd.Flags().StringVar(&flags.SourcePath, "source-path", "", "Required: General module folder path that contains all the sub modules flattened")
 	cmd.Flags().StringVar(&flags.DestinationPath, "destination-path", "", "Required: Destination path to write the new terraform file")
 	cmd.Flags().StringVar(&flags.MainTemplateFilePath, "main-template-path", "", "Optional: Custom main template path for generated module, will take default if not provided")
-	cmd.Flags().BoolVar(&flags.FetchRemote, "fetch-version-control", false, "Optional: fetch REMOTE V2 LETS GOOOOOOOOO ")
+	cmd.Flags().BoolVar(&flags.FetchRemote, "fetch-version-control", false, "Optional: Enable fetching of remote modules and exporting their variables in root module")
 	if err := cmd.MarkFlagRequired("source-path"); err != nil {
 		root.log.Error("failed to set required flag on source-path", err.Error())
 	}
