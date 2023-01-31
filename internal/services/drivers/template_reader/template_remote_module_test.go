@@ -18,6 +18,7 @@ var result = map[string]*version_control.RemoteModule{
 }
 
 func TestGetRemoteModulesFromTemplate(t *testing.T) {
+	t.Parallel()
 	log := logger.NewSimple()
 	templateReader := tmplReader.InitTemplateRemoteModule(log)
 
@@ -36,6 +37,7 @@ func TestGetRemoteModulesFromTemplate(t *testing.T) {
 }
 
 func TestBadPath(t *testing.T) {
+	t.Parallel()
 	log := logger.NewSimple()
 	templateReader := tmplReader.InitTemplateRemoteModule(log)
 
