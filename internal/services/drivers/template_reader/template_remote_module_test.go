@@ -22,7 +22,7 @@ func TestGetRemoteModulesFromTemplate(t *testing.T) {
 	log := logger.NewSimple()
 	templateReader := tmplReader.InitTemplateRemoteModule(log)
 
-	modules, err := templateReader.GetRemoteModulesFromTemplate("./main.tmpl")
+	modules, err := templateReader.GetRemoteModulesFromTemplate("./test.tmpl")
 	if err != nil {
 		t.Errorf("failed to extract sources from template %s", err.Error())
 	}
