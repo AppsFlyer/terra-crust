@@ -80,7 +80,6 @@ func (g *Git) clone(moduleData *RemoteModule, directoryPath string) error {
 
 	_, err := git.PlainClone(directoryPath, false, &git.CloneOptions{
 		URL:        moduleData.Url,
-		Progress:   os.Stdout,
 		Auth:       &http.BasicAuth{Password: token, Username: userName},
 		RemoteName: remoteName,
 		Depth:      1,
