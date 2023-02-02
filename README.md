@@ -77,8 +77,8 @@ in order to activate this feature all you have to do is to set `fetch-remote` to
 ```terra-crust terraform-all  --main-template-path=./terraform/main.tmpl  --destination-path="." --source-path=".../modules" fetch-remote=true```  
 When activating `FetchRemote` you must use Custom main template, terracrust will look for all sources
 that are from git it will look for this pattern:
-1. "git::REPOSITORY.git/PATH/MODULE"
-2. "git::REPOSITORY"
+1. `"git::REPOSITORY.git/PATH/MODULE"`
+2. `"git::REPOSITORY"`  
 it will start with git:: then the repository has to end with .git if it has
 more than 1 module inside it, if the repo is just the root module then no need to add .git to the end.
 it will also support versioning/ branch reference so feel free to add them ,
