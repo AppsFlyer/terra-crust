@@ -17,7 +17,7 @@ package app
 import (
 	logger "github.com/AppsFlyer/go-logger"
 	"github.com/AppsFlyer/terra-crust/internal/services"
-	"github.com/AppsFlyer/terra-crust/internal/services/drivers"
+	"github.com/AppsFlyer/terra-crust/internal/services/drivers/parser"
 )
 
 const (
@@ -27,11 +27,11 @@ const (
 )
 
 func InitTerraformGeneratorService(log logger.Logger) *services.Terraform {
-	parserDriver := drivers.NewTerraformParser(log)
-	parser := services.NewParser(log, parserDriver)
+	parserDriver := parser.NewTerraformParser(log)
+	parserSvc := services.NewParser(log, parserDriver)
 	templateHandler := services.NewTemplateHandler(log)
 
-	tfSvc := services.NewTerraform(log, parser, templateHandler, LocalsTemplatePath, VariableTemplatePath, MainTemplatePath)
+	tfSvc := services.NewTerraform(log, parserSvc, templateHandler, LocalsTemplatePath, VariableTemplatePath, MainTemplatePath)
 
 	return tfSvc
 }

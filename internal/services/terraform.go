@@ -27,9 +27,10 @@ const (
 	moduleDescription = `<<EOT
 	(Optional) %s Module will be used by default.
 	EOT`
-	mainDefaultVarRowTemplate = "%s = local.%s.%s \n"
-	emptyString               = ""
-	emptyStringWrapped        = `""`
+	mainDefaultVarRowTemplate  = "%s = local.%s.%s \n"
+	mainRequiredVarRowTemplate = "# %s = module. TODO: Add Required Field \n"
+	emptyString                = ""
+	emptyStringWrapped         = `""`
 )
 
 type Terraform struct {
@@ -60,24 +61,24 @@ func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPat
 		return err
 	}
 
-	out := make(templates.VariblesModuleList)
+	out := make(templates.VariablesModuleList)
 
-	for k, m := range moduleList {
+	for moduleName, m := range moduleList {
 		if len(m.Variables) == 0 {
 			continue
 		}
 
-		out[k] = &templates.VariablesModulesTF{
-			ModuleName:        k,
-			Description:       fmt.Sprintf(moduleDescription, k),
+		out[moduleName] = &templates.VariablesModulesTF{
+			ModuleName:        moduleName,
+			Description:       fmt.Sprintf(moduleDescription, moduleName),
 			ObjectTypeMapping: make(map[string]string, len(m.Variables)),
 			DefaultValues:     make(map[string]string, len(m.Variables)),
 		}
 
 		for _, v := range m.Variables {
 			if v.Default != nil && string(v.Default.Bytes()) != emptyStringWrapped {
-				out[k].ObjectTypeMapping[v.Name] = strings.ReplaceAll(string(v.Type.Bytes()), " ", emptyString)
-				out[k].DefaultValues[v.Name] = string(v.Default.Bytes())
+				out[moduleName].ObjectTypeMapping[v.Name] = strings.ReplaceAll(string(v.Type.Bytes()), " ", emptyString)
+				out[moduleName].DefaultValues[v.Name] = string(v.Default.Bytes())
 			}
 		}
 	}
@@ -135,8 +136,8 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 					}
 
 					// if property name is none string
-					if !strings.Contains(propertyName, emptyStringWrapped) {
-						propertyName = fmt.Sprintf(`"%q"`, propertyName)
+					if !strings.Contains(propertyName, `"`) {
+						propertyName = fmt.Sprintf(`"%s"`, propertyName)
 					}
 
 					if _, ok := out.Module[k].MapLocals[v.Name]; !ok {

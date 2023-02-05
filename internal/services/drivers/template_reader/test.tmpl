@@ -1,0 +1,19 @@
+module "terra-crust" {
+  source     = "git::https://github.com/AppsFlyer/terra-crust"
+}
+
+module "naming" {
+  source            = "git::https://github.domain.com/test/terraform/modules/naming.git//modules/naming?ref=0.2.1"
+}
+
+module "otel_collector" {
+  source           = "git::https://github.com/streamnative/terraform-helm-charts.git//modules/otel-collector?ref=v0.2.1"
+}
+
+module "iam-account" {
+  source            = "git::https://github.com/terraform-aws-modules/terraform-aws-iam.git//modules/iam-account"
+}
+
+module "zones" {
+ source = "git::https://github.com/terraform-aws-modules/terraform-aws-route53.git/modules/zones"
+}
