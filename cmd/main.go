@@ -16,10 +16,10 @@ package main
 
 import (
 	"context"
+	"github.com/AppsFlyer/terra-crust/cmd/app"
 	"os"
 
 	logger "github.com/AppsFlyer/go-logger"
-	"github.com/AppsFlyer/terra-crust/internal/cmd/app"
 )
 
 func main() {
