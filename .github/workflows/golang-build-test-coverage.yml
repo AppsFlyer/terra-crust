@@ -34,7 +34,7 @@ jobs:
             dep ensure
         fi
     - name: Build
-      run: go build -v internal/cmd/main.go
+      run: go build -v cmd/main.go
   
   lint:
     name: Lint
