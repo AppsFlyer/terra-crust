@@ -70,7 +70,7 @@ terra-crust terraform-all --destination-path="." --source-path=".../modules"
 ## Remote TerraCrust:
 
 ### Description
-From version 2.0.0 TerraCrust will support fetching remote modules 
+From version v0.1.0 TerraCrust will support fetching remote modules 
 and composite them into the root module that is being created.
 ### How to use
 in order to activate this feature all you have to do is to set `fetch-remote` to true like so:  

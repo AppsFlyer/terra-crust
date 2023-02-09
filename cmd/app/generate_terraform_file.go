@@ -16,8 +16,8 @@ package app
 
 import (
 	"fmt"
+	"github.com/AppsFlyer/terra-crust/cmd/types"
 
-	"github.com/AppsFlyer/terra-crust/internal/cmd/types"
 	"github.com/spf13/cobra"
 )
 

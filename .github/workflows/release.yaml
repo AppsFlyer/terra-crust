@@ -50,7 +50,7 @@ jobs:
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
           goversion: ${{ steps.get_go_version.outputs.version }}
-          project_path: "internal/cmd/"
+          project_path: "cmd/"
           binary_name: "terra-crust"
           # pre_command: ""
           # build_command: ""
