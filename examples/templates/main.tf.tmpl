@@ -5,7 +5,7 @@ module "consul_sync" {
   affinity = module.kafka.affinity
   eks_cluster = module.zookeeper.eks_cluster
 
-  # Configurable Variables - Optinal Fields 
+  # Configurable Variables - Optinal Fields
   {{(GetDefaults "consul_sync" .)}}
 }
 
@@ -16,7 +16,7 @@ module "zookeeper" {
   affinity = module.kafka.affinity
   eks_cluster = module.zookeeper.eks_cluster
 
-  # Configurable Variables - Optinal Fields 
+  # Configurable Variables - Optinal Fields
   {{(GetDefaults "consul_sync" .)}}
 }
 

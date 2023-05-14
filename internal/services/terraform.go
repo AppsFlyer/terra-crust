@@ -16,9 +16,11 @@ package services
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	logger "github.com/AppsFlyer/go-logger"
+
 	"github.com/AppsFlyer/terra-crust/internal/services/templates"
 	"github.com/AppsFlyer/terra-crust/internal/types"
 )
@@ -77,7 +79,26 @@ func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPat
 
 		for _, v := range m.Variables {
 			if v.Default != nil && string(v.Default.Bytes()) != emptyStringWrapped {
-				out[moduleName].ObjectTypeMapping[v.Name] = strings.ReplaceAll(string(v.Type.Bytes()), " ", emptyString)
+				value := strings.ReplaceAll(string(v.Type.Bytes()), " ", emptyString)
+				if strings.Contains(string(v.Type.Bytes()), "object") && strings.Contains(string(v.Type.Bytes()), "list") {
+					pattern := `(\w+)\s*=\s*(\w+)`
+					regex := regexp.MustCompile(pattern)
+					matches := regex.FindAllStringSubmatch(string(v.Type.Bytes()), -1)
+					var sb strings.Builder
+
+					sb.WriteString("optional(list(object({")
+					for _, match := range matches {
+						key := match[1]
+						val := match[2]
+
+						sb.WriteString(fmt.Sprintf("%s=%s\n", key, val))
+					}
+
+					sb.WriteString("})))")
+
+					value = sb.String()
+				}
+				out[moduleName].ObjectTypeMapping[v.Name] = value
 				out[moduleName].DefaultValues[v.Name] = string(v.Default.Bytes())
 			}
 		}
@@ -110,7 +131,9 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 
 		for _, v := range m.Variables {
 			if v.Default != nil && string(v.Default.Bytes()) != emptyStringWrapped && !strings.Contains(string(v.Type.Bytes()), "map") {
-				out.Module[k].SimpleLocals[v.Name] = string(v.Default.Bytes())
+				value := string(v.Default.Bytes())
+				out.Module[k].SimpleLocals[v.Name] = value
+
 			}
 
 			if v.Default != nil && string(v.Default.Bytes()) != emptyStringWrapped && strings.Contains(string(v.Type.Bytes()), "map") {
@@ -206,6 +229,10 @@ func (t *Terraform) parseModule(m *types.Module, moduleName string, out *templat
 			rawDefault := string(v.Default.Bytes())
 			rawDefault = strings.TrimSpace(rawDefault)
 			splittedRawString := strings.Split(rawDefault, "\n")
+
+			if v.Name == "taints" {
+				t.log.Errorf("FOUND map TAINTS : %+v", splittedRawString)
+			}
 
 			separator := "="
 			if strings.Contains(rawDefault, ":") {
