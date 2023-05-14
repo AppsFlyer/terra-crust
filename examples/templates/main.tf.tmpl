@@ -20,18 +20,18 @@ module "zookeeper" {
   {{(GetDefaults "consul_sync" .)}}
 }
 
-module "zones" {
- source = "git::https://github.com/terraform-aws-modules/terraform-aws-route53.git/modules/zones"
+module "karpenter" {
+ source = "git::https://gitlab.appsflyer.com/devops/terraform/modules/karpenter.git/karpenter?ref=0.0.1"
 
  # Dependency Injection - Required Fields
- {{(GetRequired "zones" .)}}
+ {{(GetRequired "karpenter" .)}}
 
  # Configurable Variables - Optinal Fields
- {{(GetDefaults "zones" .)}}
+ {{(GetDefaults "karpenter" .)}}
 }
 
 module "terraform-aws-resource-naming" {
- source = "git::https://github.com/traveloka/terraform-aws-resource-naming?ref=v0.23.1"
+ source = "https://gitlab.appsflyer.com/devops/terraform/modules/karpenter/"
 
  # Dependency Injection - Required Fields
  {{(GetRequired "terraform-aws-resource-naming" .)}}
