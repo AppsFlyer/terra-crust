@@ -2,22 +2,23 @@ package version_control
 
 import (
 	"fmt"
+	"os"
+	"strings"
+
 	log "github.com/AppsFlyer/go-logger"
 	"github.com/go-git/go-git/v5" /// with go modules disabled
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	cp "github.com/otiai10/copy"
 	"github.com/pkg/errors"
-	"os"
-	"strings"
 )
 
 const (
 	FolderPathFormat = "%s/%s"
 	TempFolderPath   = "%s/temp_clone_path/%s"
-	GitlabTokenENV   = ""
-	GithubTokenENV   = ""
-	GitlabUserENV    = ""
-	GithubUserENV    = ""
+	GitlabTokenENV   = "GITLAB_TOKEN"
+	GitlabUserENV    = "GITLAB_USER"
+	GithubTokenENV   = "GITHUB_TOKEN"
+	GithubUserENV    = "GITHUB_USER"
 )
 
 type RemoteModule struct {
