@@ -121,11 +121,7 @@ func (p *TerraformParser) parseVariable(block *hclwrite.Block) *types.Variable {
 	for k, v := range body.Attributes() {
 		switch k {
 		case "type":
-			var typeTokens hclwrite.Tokens
-			for _, t := range v.Expr().BuildTokens(nil) {
-				typeTokens = append(typeTokens, t)
-			}
-			variable.Type = typeTokens
+			variable.Type = v.Expr().BuildTokens(nil)
 		case "default":
 			variable.Default = v.Expr().BuildTokens(nil)
 		case HclBlockDescriptionField:
