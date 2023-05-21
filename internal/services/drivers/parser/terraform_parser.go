@@ -16,16 +16,17 @@ package parser
 
 import (
 	"errors"
-	"github.com/AppsFlyer/terra-crust/internal/services/drivers"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/AppsFlyer/terra-crust/internal/services/drivers"
+
 	logger "github.com/AppsFlyer/go-logger"
+
 	"github.com/AppsFlyer/terra-crust/internal/types"
 
-	hcl "github.com/hashicorp/hcl/v2"
-	"github.com/hashicorp/hcl/v2/hclsyntax"
+	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/zclconf/go-cty/cty"
 )
@@ -122,9 +123,7 @@ func (p *TerraformParser) parseVariable(block *hclwrite.Block) *types.Variable {
 		case "type":
 			var typeTokens hclwrite.Tokens
 			for _, t := range v.Expr().BuildTokens(nil) {
-				if t.Type != hclsyntax.TokenNewline {
-					typeTokens = append(typeTokens, t)
-				}
+				typeTokens = append(typeTokens, t)
 			}
 			variable.Type = typeTokens
 		case "default":
