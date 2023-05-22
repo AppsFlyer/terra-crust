@@ -16,7 +16,6 @@ package services
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 
 	logger "github.com/AppsFlyer/go-logger"
@@ -79,26 +78,7 @@ func (t *Terraform) GenerateModuleVariableObject(modulesFilePath, destinationPat
 
 		for _, v := range m.Variables {
 			if v.Default != nil && string(v.Default.Bytes()) != emptyStringWrapped {
-				value := strings.ReplaceAll(string(v.Type.Bytes()), " ", emptyString)
-				if strings.Contains(string(v.Type.Bytes()), "object") && strings.Contains(string(v.Type.Bytes()), "list") {
-					pattern := `(\w+)\s*=\s*(\w+)`
-					regex := regexp.MustCompile(pattern)
-					matches := regex.FindAllStringSubmatch(string(v.Type.Bytes()), -1)
-					var sb strings.Builder
-
-					sb.WriteString("optional(list(object({")
-					for _, match := range matches {
-						key := match[1]
-						val := match[2]
-
-						sb.WriteString(fmt.Sprintf("%s=%s\n", key, val))
-					}
-
-					sb.WriteString("})))")
-
-					value = sb.String()
-				}
-				out[moduleName].ObjectTypeMapping[v.Name] = value
+				out[moduleName].ObjectTypeMapping[v.Name] = string(v.Type.Bytes())
 				out[moduleName].DefaultValues[v.Name] = string(v.Default.Bytes())
 			}
 		}
@@ -256,3 +236,6 @@ func (t *Terraform) parseModule(m *types.Module, moduleName string, out *templat
 		}
 	}
 }
+
+//is it possible to make a code that receive a generic string that could change but has a template of :
+//"key = value key2 = value2...." and it repeats alot of time, The spaces between the "key" to the "=" could be none and could be alot , the space between value1 to key2 could be 1 and could be alot , it cannot be 0, is it possible to extract the key value into a map or any kind of data structure ?
