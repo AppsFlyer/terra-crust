@@ -9,7 +9,7 @@ locals{ {{range $moduleName,$moduleData := .Module}}
 {{$localName}} = coalesce(var.{{$moduleName}}.{{$localName}},{{$localValue}}) {{end}}{{end}}
 
 {{define "typeMapLocalBlock"}} {{$moduleData := .ModuleData}} {{$moduleName := .ModuleName}}{{range $mapKey,$mapValue :=  $moduleData.MapLocals}}
-{{$tempLen := len $mapValue }}{{if eq $tempLen 1}} {{$mapKey}} = var.{{$moduleName}}.{{$mapKey}} != null ? var.{{$moduleName}}.{{$mapKey}}:{} {{else}} 
+{{$tempLen := len $mapValue }}{{if eq $tempLen 0}} {{$mapKey}} = var.{{$moduleName}}.{{$mapKey}} != null ? var.{{$moduleName}}.{{$mapKey}}:{} {{else}}
 {{$mapKey}} = var.{{$moduleName}}.{{$mapKey}} != null ? merge(var.{{$moduleName}}.{{$mapKey}},
 tomap({ {{range $propertyName, $propertyValue := $mapValue}}
 {{$propertyName}} = contains(keys(var.{{$moduleName}}.{{$mapKey}}),{{$propertyName}}) != false ? var.{{$moduleName}}.{{$mapKey}}[{{$propertyName}}] : {{$propertyValue}}{{end}}}
