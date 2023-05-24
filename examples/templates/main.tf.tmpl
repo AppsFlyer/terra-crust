@@ -19,8 +19,6 @@ module "zookeeper" {
   # Configurable Variables - Optinal Fields
   {{(GetDefaults "consul_sync" .)}}
 }
-module "karpenter" {
-  source="git::https://gitlab.appsflyer.com/devops/terraform/modules/karpenter.git//karpenter?ref=0.0.1"
 
 module "zones" {
  source = "git::https://github.com/terraform-aws-modules/terraform-aws-route53.git/modules/zones"
