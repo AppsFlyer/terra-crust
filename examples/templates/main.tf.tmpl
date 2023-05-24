@@ -1,7 +1,53 @@
+module "consul_sync" {
+  source = "../../modules/consul_sync"
+  # Dependency Injection - Required Fields
+
+  affinity = module.kafka.affinity
+  eks_cluster = module.zookeeper.eks_cluster
+
+  # Configurable Variables - Optinal Fields
+  {{(GetDefaults "consul_sync" .)}}
+}
+
+module "zookeeper" {
+  source = "../../modules/consul_sync"
+  # Dependency Injection - Required Fields
+
+  affinity = module.kafka.affinity
+  eks_cluster = module.zookeeper.eks_cluster
+
+  # Configurable Variables - Optinal Fields
+  {{(GetDefaults "consul_sync" .)}}
+}
 module "karpenter" {
   source="git::https://gitlab.appsflyer.com/devops/terraform/modules/karpenter.git//karpenter?ref=0.0.1"
 
+module "zones" {
+ source = "git::https://github.com/terraform-aws-modules/terraform-aws-route53.git/modules/zones"
  {{(GetRequired "karpenter" .)}}
 
+ # Dependency Injection - Required Fields
+ {{(GetRequired "zones" .)}}
+
+ # Configurable Variables - Optinal Fields
+ {{(GetDefaults "zones" .)}}
  {{(GetDefaults "karpenter" .)}}
+}
+
+module "terraform-aws-resource-naming" {
+ source = "git::https://github.com/traveloka/terraform-aws-resource-naming?ref=v0.23.1"
+
+ # Dependency Injection - Required Fields
+ {{(GetRequired "terraform-aws-resource-naming" .)}}
+
+ # Configurable Variables - Optinal Fields
+ {{(GetDefaults "terraform-aws-resource-naming" .)}}
+}
+
+module "iam-account" {
+  source            = "git::https://github.com/terraform-aws-modules/terraform-aws-iam.git/modules/iam-account"
+
+ {{(GetRequired "iam-account" .)}}
+
+ {{(GetDefaults "iam-account" .)}}
 }
