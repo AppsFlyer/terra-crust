@@ -22,14 +22,12 @@ module "zookeeper" {
 
 module "zones" {
  source = "git::https://github.com/terraform-aws-modules/terraform-aws-route53.git/modules/zones"
- {{(GetRequired "karpenter" .)}}
 
  # Dependency Injection - Required Fields
  {{(GetRequired "zones" .)}}
 
  # Configurable Variables - Optinal Fields
  {{(GetDefaults "zones" .)}}
- {{(GetDefaults "karpenter" .)}}
 }
 
 module "terraform-aws-resource-naming" {
