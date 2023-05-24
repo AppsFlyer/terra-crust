@@ -122,6 +122,12 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 				rawDefault = strings.ReplaceAll(rawDefault, "}", emptyString)
 				rawDefault = strings.TrimSpace(rawDefault)
 
+				if rawDefault == "" {
+					out.Module[k].MapLocals[v.Name] = make(templates.ComplexVariableData, 0)
+
+					continue
+				}
+
 				splittedRawString := strings.Split(rawDefault, "\n")
 
 				separator := "="
@@ -139,7 +145,7 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 					}
 
 					// if property name is none string
-					if !strings.Contains(propertyName, `"`) {
+					if !strings.Contains(propertyName, "\"") {
 						propertyName = fmt.Sprintf(`"%s"`, propertyName)
 					}
 
