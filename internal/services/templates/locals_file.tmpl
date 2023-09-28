@@ -5,8 +5,9 @@ locals{ {{range $moduleName,$moduleData := .Module}}
 }{{end}}
 }
 
-{{define "simple_local_var"}} {{$moduleName := .VariableName}} {{range $localName,$localValue := .ModuleData}}
-{{$localName}} = coalesce(var.{{$moduleName}}.{{$localName}},{{$localValue}}) {{end}}{{end}}
+{{define "simple_local_var"}} {{$moduleName := .VariableName}} {{range $localName, $localValue := .ModuleData}}
+{{if $localValue}}{{$localName}} = coalesce(var.{{$moduleName}}.{{$localName}}, {{$localValue}}){{else}}
+{{$localName}} = var.{{$moduleName}}.{{$localName}}{{end}}{{end}}{{end}}
 
 {{define "typeMapLocalBlock"}} {{$moduleData := .ModuleData}} {{$moduleName := .ModuleName}}{{range $mapKey,$mapValue :=  $moduleData.MapLocals}}
 {{$tempLen := len $mapValue }}{{if eq $tempLen 0}} {{$mapKey}} = var.{{$moduleName}}.{{$mapKey}} != null ? var.{{$moduleName}}.{{$mapKey}}:{} {{else}}

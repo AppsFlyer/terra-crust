@@ -1,10 +1,11 @@
 package version_control_test
 
 import (
-	logger "github.com/AppsFlyer/go-logger"
-	version_control "github.com/AppsFlyer/terra-crust/internal/services/drivers/version_control"
 	"os"
 	"testing"
+
+	logger "github.com/AppsFlyer/go-logger"
+	version_control "github.com/AppsFlyer/terra-crust/internal/services/drivers/version_control"
 )
 
 const (
@@ -21,7 +22,7 @@ var mockModules = map[string]*version_control.RemoteModule{
 		Url: TerraCrustURL,
 	},
 	NamingModuleName: {
-		Url:     "https://github.com/traveloka/terraform-aws-resource-naming",
+		Url:     "https://github.com/fajrinazis/terraform-aws-resource-naming.git",
 		Version: "v0.23.1",
 	},
 	ZonesModuleName: {
