@@ -34,7 +34,7 @@ func generateMain(root *RootCommand) *cobra.Command {
 			templateReader := template_reader.InitTemplateRemoteModule(log)
 			gitDriver := version_control.InitGitProvider(log)
 
-			if flags.FetchRemote && flags.MainTemplateFilePath != "" {
+			if (flags.FetchRemote || flags.ExternalGit) && flags.MainTemplateFilePath != "" {
 				log.Infof("Searching for remote modules")
 				remoteModulesMap, err := templateReader.GetRemoteModulesFromTemplate(flags.MainTemplateFilePath)
 				if err != nil {

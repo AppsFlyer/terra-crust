@@ -33,7 +33,7 @@ func generateAllFiles(root *RootCommand) *cobra.Command {
 			templateReader := template_reader.InitTemplateRemoteModule(log)
 			gitDriver := version_control.InitGitProvider(log)
 
-			if flags.FetchRemote && flags.MainTemplateFilePath != "" {
+			if (flags.FetchRemote || flags.ExternalGit) && flags.MainTemplateFilePath != "" {
 				remoteModulesMap, err := templateReader.GetRemoteModulesFromTemplate(flags.MainTemplateFilePath)
 				if err != nil {
 					log.Error("Failed parsing remote modules from custom template", err.Error())
