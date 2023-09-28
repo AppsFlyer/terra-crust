@@ -16,6 +16,7 @@ package services
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	logger "github.com/AppsFlyer/go-logger"
@@ -109,9 +110,20 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 			MapLocals:    make(map[string]templates.ComplexVariableData),
 		}
 
-		for _, v := range m.Variables {
+		var variables []*types.Variable
+		variables = append(variables, m.Variables...)
+
+		// Sort the variables slice based on the Name field
+		sort.Slice(variables, func(i, j int) bool {
+			return variables[i].Name < variables[j].Name
+		})
+		for _, v := range variables {
+
 			if v.Default != nil && string(v.Default.Bytes()) != emptyStringWrapped && !strings.Contains(string(v.Type.Bytes()), "map") {
-				value := string(v.Default.Bytes())
+				value := strings.Trim(string(v.Default.Bytes()), " ")
+				if value == emptyString || value == `""` || value == `''` || value == "null" {
+					value = emptyString
+				}
 				out.Module[k].SimpleLocals[v.Name] = value
 
 			}
@@ -129,6 +141,7 @@ func (t *Terraform) GenerateModuleDefaultLocals(modulesFilePath, destinationPath
 				}
 
 				splittedRawString := strings.Split(rawDefault, "\n")
+				sort.Strings(splittedRawString)
 
 				separator := "="
 				if strings.Contains(rawDefault, ":") {
