@@ -41,13 +41,17 @@ func generateAllFiles(root *RootCommand) *cobra.Command {
 					return err
 				}
 
-				if err = gitDriver.CloneModules(remoteModulesMap, flags.SourcePath); err != nil {
+				if err = gitDriver.CloneModules(remoteModulesMap, flags.SourcePath, flags.ExternalGit); err != nil {
 					log.Error("Failed cloning remote modules ", err.Error())
 
 					return err
 				}
 				defer func() {
-					if err = gitDriver.CleanModulesFolders(remoteModulesMap, flags.SourcePath); err != nil {
+					if err = gitDriver. // The `CleanModulesFolders` function is used to clean up the folders of remote
+						// modules that were cloned during the execution of the program. It takes the
+						// `remoteModulesMap` and `flags.SourcePath` as parameters. It is called as a
+						// deferred function at the end of the `generateAllFiles` command.
+						CleanModulesFolders(remoteModulesMap, flags.SourcePath); err != nil {
 						log.Errorf("Failed to clean up some of the remote resources please make sure to clean it manually and check the error , %s", err.Error())
 					}
 				}()
@@ -81,6 +85,7 @@ func generateAllFiles(root *RootCommand) *cobra.Command {
 	cmd.Flags().StringVar(&flags.DestinationPath, "destination-path", "", "Required: Destination path to write the new terraform file")
 	cmd.Flags().StringVar(&flags.MainTemplateFilePath, "main-template-path", "", "Optional: Custom main template path for generated module, will take default if not provided")
 	cmd.Flags().BoolVar(&flags.FetchRemote, "fetch-remote", false, "Optional: Enable fetching of remote modules and exporting their variables in root module")
+	cmd.Flags().BoolVar(&flags.ExternalGit, "ext-git", false, "Optional: Enable external git for remote modules")
 	if err := cmd.MarkFlagRequired("source-path"); err != nil {
 		root.log.Error("failed to set required flag on source-path", err.Error())
 	}

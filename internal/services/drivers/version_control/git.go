@@ -3,6 +3,7 @@ package version_control
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 
 	log "github.com/AppsFlyer/go-logger"
@@ -38,14 +39,14 @@ func InitGitProvider(log log.Logger) *Git {
 	}
 }
 
-func (g *Git) CloneModules(modules map[string]*RemoteModule, modulesSource string) error {
+func (g *Git) CloneModules(modules map[string]*RemoteModule, modulesSource string, externalGit bool) error {
 	for moduleName, moduleData := range modules {
 		clonePath := fmt.Sprintf(FolderPathFormat, modulesSource, moduleName)
 		if moduleData.Path != "" {
 			clonePath = fmt.Sprintf(TempFolderPath, modulesSource, moduleName)
 		}
 
-		if err := g.clone(moduleData, clonePath); err != nil {
+		if err := g.clone(moduleData, clonePath, externalGit); err != nil {
 			return errors.Wrapf(err, "failed to fetch module , url: %s", moduleData.Url)
 		}
 
@@ -71,13 +72,18 @@ func (g *Git) CloneModules(modules map[string]*RemoteModule, modulesSource strin
 	return nil
 }
 
-func (g *Git) clone(moduleData *RemoteModule, directoryPath string) error {
-	userName, token := g.getGitUserNameAndToken(moduleData.Url)
+func (g *Git) clone(moduleData *RemoteModule, directoryPath string, externalGit bool) error {
 
 	remoteName := "origin"
 	if moduleData.Version != "" {
 		remoteName = moduleData.Version
 	}
+
+	if externalGit {
+		err := exec.Command("git", "clone", moduleData.Url, directoryPath, "--depth", "1", "-o", remoteName).Run()
+		return err
+	}
+	userName, token := g.getGitUserNameAndToken(moduleData.Url)
 
 	_, err := git.PlainClone(directoryPath, false, &git.CloneOptions{
 		URL:        moduleData.Url,

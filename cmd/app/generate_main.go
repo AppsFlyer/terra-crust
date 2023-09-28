@@ -45,7 +45,7 @@ func generateMain(root *RootCommand) *cobra.Command {
 
 				log.Infof("found remote modules: ", remoteModulesMap)
 
-				if err = gitDriver.CloneModules(remoteModulesMap, flags.SourcePath); err != nil {
+				if err = gitDriver.CloneModules(remoteModulesMap, flags.SourcePath, flags.ExternalGit); err != nil {
 					log.Error("Failed cloning remote modules ", err.Error())
 
 					return err
@@ -74,6 +74,7 @@ func generateMain(root *RootCommand) *cobra.Command {
 	cmd.Flags().StringVar(&flags.DestinationPath, "destination-path", "", "Required: Destination path to write the new terraform file")
 	cmd.Flags().StringVar(&flags.MainTemplateFilePath, "main-template-path", "", "Optional: Custom main template path for generated module, will take default if not provided")
 	cmd.Flags().BoolVar(&flags.FetchRemote, "fetch-remote", false, "Optional: Enable fetching of remote modules and exporting their variables in root module")
+	cmd.Flags().BoolVar(&flags.ExternalGit, "ext-git", false, "Optional: Enable external git for remote modules")
 	if err := cmd.MarkFlagRequired("source-path"); err != nil {
 		root.log.Error("failed to set required flag on source-path", err.Error())
 	}
