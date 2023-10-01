@@ -12,7 +12,7 @@ const (
 	TerraCrustModuleName = "terracrust"
 	NamingModuleName     = "terraform-aws-resource-naming"
 	ZonesModuleName      = "zones"
-	TerraCrustURL        = "https://github.com/AppsFlyer/terra-crust"
+	TerraCrustURL        = "https://github.com/AppsFlyer/terra-crust.git"
 )
 
 var ModulesTestPath = map[bool]string{
