@@ -19,4 +19,5 @@ type TFGenerateFlags struct {
 	DestinationPath      string
 	MainTemplateFilePath string
 	FetchRemote          bool
+	ExternalGit          bool
 }
