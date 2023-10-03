@@ -78,7 +78,7 @@ so save credentials can be used, instead of generating tokens.
 ### How to use
 in order to activate this feature all you have to do is to set `fetch-remote` to true like so:  
 ``` bash
-terra-crust terraform-all  --main-template-path=./terraform/main.tmpl  --destination-path="." --source-path=".../modules" fetch-remote=true
+terra-crust terraform-all  --main-template-path=./terraform/main.tmpl  --destination-path="." --source-path=".../modules" --fetch-remote=true
 ```  
 or with an external git client with the flag `--ext-git` to true like so:  
 ``` bash

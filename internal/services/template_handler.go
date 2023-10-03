@@ -83,8 +83,7 @@ func (th *TemplateHandler) WriteTemplateToFile(fileName, templatePath, destinati
 	}
 
 	buf := new(bytes.Buffer)
-	err = tmpl.Execute(buf, out)
-	if err != nil {
+	if err = tmpl.Execute(buf, out); err != nil {
 		th.logger.Error("Failed executing template", err.Error())
 		return err
 	}
