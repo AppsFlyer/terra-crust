@@ -5,7 +5,7 @@ on:
   # workflow_run:
   #   workflows: ["golang-build-test-coverage"]
   #   branches: [main]
-  #   types: 
+  #   types:
   #     - completed
   # Allows you to run this workflow manually from the Actions tab
   # workflow_dispatch:
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
-      contents: write  # for wangyoucao577/go-release-action to upload release assets
+      contents: write # for wangyoucao577/go-release-action to upload release assets
     strategy:
       matrix:
         goos: [linux, darwin]
@@ -43,8 +43,8 @@ jobs:
           echo "::set-output name=errors::$(cat error)"
           jq -r .Go output > version
           echo "::set-output name=version::$(cat version)"
- 
-      - uses: wangyoucao577/go-release-action@v1.29
+
+      - uses: wangyoucao577/go-release-action@v1.40
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
@@ -56,4 +56,3 @@ jobs:
           # build_command: ""
           # build_flags: ""
           # ldflags: ""
-
