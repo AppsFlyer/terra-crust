@@ -72,9 +72,19 @@ terra-crust terraform-all --destination-path="." --source-path=".../modules"
 ### Description
 From version v0.1.0 TerraCrust will support fetching remote modules 
 and composite them into the root module that is being created.
+From version v0.1.5 TerraCrust will support fetching remote modules
+with git cli and not only with internal go git client.
+so save credentials can be used, instead of generating tokens.
 ### How to use
 in order to activate this feature all you have to do is to set `fetch-remote` to true like so:  
-```terra-crust terraform-all  --main-template-path=./terraform/main.tmpl  --destination-path="." --source-path=".../modules" fetch-remote=true```  
+``` bash
+terra-crust terraform-all  --main-template-path=./terraform/main.tmpl  --destination-path="." --source-path=".../modules" --fetch-remote=true
+```  
+or with an external git client with the flag `--ext-git` to true like so:  
+``` bash
+terra-crust terraform-all  --main-template-path=./terraform/main.tmpl  --destination-path="." --source-path=".../modules" --ext-git=true
+```
+
 When activating `FetchRemote` you must use Custom main template, terracrust will look for all sources
 that are from git it will look for this pattern:
 1. `"git::REPOSITORY.git/PATH/MODULE"`
@@ -85,8 +95,9 @@ it will also support versioning/ branch reference so feel free to add them ,
 more examples could be found under `examples/templates`.
 
 Output Example for this module: 
-```"git::https://github.com/terraform-aws-modules/terraform-aws-iam.git/modules/iam-account"```
-```
+`"git::https://github.com/terraform-aws-modules/terraform-aws-iam.git/modules/iam-account"`
+
+```terraform
 module "iam-account" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-iam.git/modules/iam-account"
 
@@ -116,7 +127,7 @@ The main.tmpl exposing Template API that includes for now 2 functions:
 2. GetDefaults - Will expose the optional variables - without needing to fill them up
 
 For example:
-```
+```terraform
 module "iam-account" {
   source            = "git::https://github.com/terraform-aws-modules/terraform-aws-iam.git/modules/iam-account"
 

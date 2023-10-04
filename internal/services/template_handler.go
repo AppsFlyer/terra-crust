@@ -83,16 +83,22 @@ func (th *TemplateHandler) WriteTemplateToFile(fileName, templatePath, destinati
 	}
 
 	buf := new(bytes.Buffer)
-	if tmpl.Execute(buf, out) != nil {
+	if err = tmpl.Execute(buf, out); err != nil {
+		th.logger.Error("Failed executing template", err.Error())
 		return err
 	}
 
 	filePath := fmt.Sprintf("%s/%s", destinationPath, fileName)
 	if err = os.Remove(filePath); (err != nil) && (!errors.Is(err, os.ErrNotExist)) {
+		th.logger.Error("Failed removing file", err.Error())
 		return err
 	}
 
-	file, _ := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		th.logger.Error("Failed opening file", err.Error())
+		return err
+	}
 
 	defer file.Close()
 
