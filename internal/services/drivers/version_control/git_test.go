@@ -97,8 +97,8 @@ func CloneAndCleanup(t *testing.T, externalGit bool) {
 		t.Errorf("Clone failed , did not find naming")
 	}
 
-	if len(folders) != 1 {
-		t.Errorf("Expected 1 folder count received %d", len(folders))
+	if len(folders) != 3 {
+		t.Errorf("Expected 3 folder count received %d", len(folders))
 	}
 
 	if err = gitDriver.CleanModulesFolders(mockModules, ModulesTestPath[externalGit]); err != nil {
