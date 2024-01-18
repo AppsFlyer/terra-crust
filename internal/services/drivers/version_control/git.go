@@ -20,6 +20,7 @@ const (
 	remoteName       = "origin"
 	GitlabTokenENV   = "GITLAB_TOKEN"
 	GitRefTag        = "refs/tags/%s"
+	GitRefBranch     = "refs/remotes/%s/%s"
 	GitlabUserENV    = "GITLAB_USER"
 	GithubTokenENV   = "GITHUB_TOKEN"
 	GithubUserENV    = "GITHUB_USER"
@@ -88,18 +89,33 @@ func (g *Git) clone(moduleData *RemoteModule, directoryPath string, externalGit 
 	userName, token := g.getGitUserNameAndToken(moduleData.Url)
 
 	cloneOpts := git.CloneOptions{
-		URL:          moduleData.Url,
-		Auth:         &http.BasicAuth{Password: token, Username: userName},
-		RemoteName:   remoteName,
-		SingleBranch: true,
-		Tags:         git.NoTags,
-		Depth:        1,
+		URL:        moduleData.Url,
+		Auth:       &http.BasicAuth{Password: token, Username: userName},
+		RemoteName: remoteName,
+		Depth:      1,
 	}
-	if moduleData.Version != "" {
-		cloneOpts.ReferenceName = plumbing.ReferenceName(fmt.Sprintf(GitRefTag, moduleData.Version))
-	}
-	_, err := git.PlainClone(directoryPath, false, &cloneOpts)
 
+	repo, err := git.PlainClone(directoryPath, false, &cloneOpts)
+
+	if moduleData.Version != "" {
+		workTree, err := repo.Worktree()
+		if err != nil {
+			return err
+		}
+		tagRef := fmt.Sprintf(GitRefTag, moduleData.Version)
+		g.log.Debugf("searching %s in %s", moduleData.Version, tagRef)
+		err = workTree.Checkout(&git.CheckoutOptions{
+			Branch: plumbing.ReferenceName(tagRef),
+		})
+		if err != nil {
+			branchRef := fmt.Sprintf(GitRefBranch, remoteName, moduleData.Version)
+			g.log.Debugf("version not found in tags ref, searching %s in %s", moduleData.Version, branchRef)
+			bErr := workTree.Checkout(&git.CheckoutOptions{
+				Branch: plumbing.ReferenceName(branchRef),
+			})
+			return bErr
+		}
+	}
 	return err
 }
 
