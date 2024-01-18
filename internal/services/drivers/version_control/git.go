@@ -2,6 +2,7 @@ package version_control
 
 import (
 	"fmt"
+	"github.com/go-git/go-git/v5/plumbing"
 	"os"
 	"os/exec"
 	"strings"
@@ -16,7 +17,10 @@ import (
 const (
 	FolderPathFormat = "%s/%s"
 	TempFolderPath   = "%s/temp_clone_path/%s"
+	remoteName       = "origin"
 	GitlabTokenENV   = "GITLAB_TOKEN"
+	GitRefTag        = "refs/tags/%s"
+	GitRefBranch     = "refs/remotes/%s/%s"
 	GitlabUserENV    = "GITLAB_USER"
 	GithubTokenENV   = "GITHUB_TOKEN"
 	GithubUserENV    = "GITHUB_USER"
@@ -74,24 +78,44 @@ func (g *Git) CloneModules(modules map[string]*RemoteModule, modulesSource strin
 
 func (g *Git) clone(moduleData *RemoteModule, directoryPath string, externalGit bool) error {
 
-	remoteName := "origin"
-	if moduleData.Version != "" {
-		remoteName = moduleData.Version
-	}
-
 	if externalGit {
-		err := exec.Command("git", "clone", moduleData.Url, directoryPath, "--depth", "1", "-o", remoteName).Run()
+		args := []string{"clone", moduleData.Url, directoryPath, "--no-tags", "--single-branch", "--depth", "1", "-o", remoteName}
+		if moduleData.Version != "" {
+			args = append(args, "--branch", moduleData.Version)
+		}
+		err := exec.Command("git", args...).Run()
 		return err
 	}
 	userName, token := g.getGitUserNameAndToken(moduleData.Url)
 
-	_, err := git.PlainClone(directoryPath, false, &git.CloneOptions{
+	cloneOpts := git.CloneOptions{
 		URL:        moduleData.Url,
 		Auth:       &http.BasicAuth{Password: token, Username: userName},
 		RemoteName: remoteName,
 		Depth:      1,
-	})
+	}
 
+	repo, err := git.PlainClone(directoryPath, false, &cloneOpts)
+
+	if moduleData.Version != "" {
+		workTree, err := repo.Worktree()
+		if err != nil {
+			return err
+		}
+		tagRef := fmt.Sprintf(GitRefTag, moduleData.Version)
+		g.log.Debugf("searching %s in %s", moduleData.Version, tagRef)
+		err = workTree.Checkout(&git.CheckoutOptions{
+			Branch: plumbing.ReferenceName(tagRef),
+		})
+		if err != nil {
+			branchRef := fmt.Sprintf(GitRefBranch, remoteName, moduleData.Version)
+			g.log.Debugf("version not found in tags ref, searching %s in %s", moduleData.Version, branchRef)
+			bErr := workTree.Checkout(&git.CheckoutOptions{
+				Branch: plumbing.ReferenceName(branchRef),
+			})
+			return bErr
+		}
+	}
 	return err
 }
 
