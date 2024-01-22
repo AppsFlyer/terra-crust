@@ -60,12 +60,12 @@ func CloneAndCleanup(t *testing.T, externalGit bool) {
 			Url: TerraCrustURL,
 		},
 		NamingModuleName: {
-			Url:     "https://github.com/fajrinazis/terraform-aws-resource-naming.git",
-			Version: "v0.3.0",
+			Url:     TerraCrustURL,
+			Version: "v0.1.0",
 		},
 		ZonesModuleName: {
-			Url:  "https://github.com/terraform-aws-modules/terraform-aws-route53.git",
-			Path: "modules/zones",
+			Url:     TerraCrustURL,
+			Version: "main",
 		},
 	}
 	log := logger.NewSimple()
