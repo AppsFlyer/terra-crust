@@ -94,7 +94,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          token: ${{secrets.GITHUB_TOKEN}}
+          credentials: ${{secrets.GIT_CREDENTIAL}}
       - name: Setup go
         uses: actions/setup-go@v3
         with:
