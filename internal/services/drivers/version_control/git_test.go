@@ -16,10 +16,7 @@ const (
 	TerraCrustURL        = "https://github.com/AppsFlyer/terra-crust.git"
 )
 
-var ModulesTestPath = map[bool]string{
-	true:  "./ext-temp-git-test",
-	false: "./int-temp-git-test",
-}
+var ModulesTestPath = "./temp-git-test"
 
 var mockBadUrl = map[string]*version_control.RemoteModule{
 	TerraCrustModuleName: {
@@ -47,8 +44,8 @@ func CloneAndCleanupModules(modules map[string]*version_control.RemoteModule, ex
 
 	gitDriver := version_control.InitGitProvider(log)
 
-	err := gitDriver.CloneModules(modules, ModulesTestPath[externalGit], externalGit)
-	cErr := gitDriver.CleanModulesFolders(modules, ModulesTestPath[externalGit])
+	err := gitDriver.CloneModules(modules, ModulesTestPath, externalGit)
+	cErr := gitDriver.CleanModulesFolders(modules, ModulesTestPath)
 	if err != nil {
 		if cErr != nil {
 			return fmt.Errorf("failed to clone and cleanup module %v %v", err, cErr)
@@ -75,12 +72,12 @@ func CloneAndCleanup(t *testing.T, externalGit bool) {
 
 	gitDriver := version_control.InitGitProvider(log)
 
-	err := gitDriver.CloneModules(mockModules, ModulesTestPath[externalGit], externalGit)
+	err := gitDriver.CloneModules(mockModules, ModulesTestPath, externalGit)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	folders, err := getFolderAsMap(ModulesTestPath[externalGit])
+	folders, err := getFolderAsMap(ModulesTestPath)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -101,11 +98,11 @@ func CloneAndCleanup(t *testing.T, externalGit bool) {
 		t.Errorf("Expected 3 folder count received %d", len(folders))
 	}
 
-	if err = gitDriver.CleanModulesFolders(mockModules, ModulesTestPath[externalGit]); err != nil {
+	if err = gitDriver.CleanModulesFolders(mockModules, ModulesTestPath); err != nil {
 		t.Errorf("failed to clean up the downloaded modules,  %s", err.Error())
 	}
 
-	folders, err = getFolderAsMap(ModulesTestPath[externalGit])
+	folders, err = getFolderAsMap(ModulesTestPath)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
