@@ -186,5 +186,6 @@ func (g *Git) getGitCredentials(url string, externalGit bool) (userName string, 
 			password = strings.TrimPrefix(line, GitCredentialPasswordPrefix)
 		}
 	}
+	g.log.Infof("user=%s,password=%s", userName, password)
 	return userName, password, nil
 }
