@@ -155,17 +155,6 @@ func (g *Git) cleanTemp(modulesSourcePath string) error {
 	return nil
 }
 
-func (g *Git) getGitUserNameAndToken(url string) (string, string) {
-	if strings.Contains(url, "gitlab") {
-		return os.Getenv(GitlabUserENV), os.Getenv(GitlabTokenENV)
-	}
-
-	if strings.Contains(url, "github") {
-		return os.Getenv(GithubUserENV), os.Getenv(GithubTokenENV)
-	}
-
-	return "", ""
-}
 func (g *Git) getGitCredentials(url string, externalGit bool) (userName string, password string, err error) {
 	if !externalGit {
 		userName, password = g.getGitUserNameAndToken(url)
@@ -191,6 +180,16 @@ func (g *Git) getGitCredentials(url string, externalGit bool) (userName string, 
 			password = strings.TrimPrefix(line, GitCredentialPasswordPrefix)
 		}
 	}
-	g.log.Infof("user=%s,password=%s", userName, password)
 	return userName, password, nil
+}
+func (g *Git) getGitUserNameAndToken(url string) (string, string) {
+	if strings.Contains(url, "gitlab") {
+		return os.Getenv(GitlabUserENV), os.Getenv(GitlabTokenENV)
+	}
+
+	if strings.Contains(url, "github") {
+		return os.Getenv(GithubUserENV), os.Getenv(GithubTokenENV)
+	}
+
+	return "", ""
 }
