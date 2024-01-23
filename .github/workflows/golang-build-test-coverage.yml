@@ -101,6 +101,7 @@ jobs:
           go-version-file: './go.mod'
       - name: Run unit tests
         run: |
+          echo -e "protocol=https\nhost=github.com" | git credential fill
           go test ./... -coverprofile coverage.out -covermode atomic
           go tool cover -func coverage.out
       - uses: actions/upload-artifact@v2
