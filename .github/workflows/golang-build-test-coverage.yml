@@ -103,6 +103,7 @@ jobs:
           go-version-file: './go.mod'
       - name: Run unit tests
         run: |
+          git config --global hub.protocol https
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
           echo -e "protocol=https\nhost=github.com" | git credential fill
           go test ./... -coverprofile coverage.out -covermode atomic
