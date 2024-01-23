@@ -101,11 +101,14 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version-file: './go.mod'
+      - name: Store credentials
+        run: |
+          echo "protocol=https" | git credential approve
+          echo "host=github.com" | git credential approve
+          echo "username=x-access-token" | git credential approve
+          echo "password=${{ secrets.GITHUB_TOKEN }}" | git credential approve
       - name: Run unit tests
         run: |
-          git config --global hub.protocol https
-          git config --global url.https://${{ secrets.GITHUB_TOKEN }}@github.com/.insteadOf https://github.com/
-          git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
           echo -e "protocol=https\nhost=github.com" | git credential fill
           go test ./... -coverprofile coverage.out -covermode atomic
           go tool cover -func coverage.out
