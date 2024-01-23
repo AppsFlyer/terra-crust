@@ -103,8 +103,8 @@ jobs:
           go-version-file: './go.mod'
       - name: Setup credentials
         uses: fusion-engineering/setup-git-credentials@v2
-          with:
-            credentials: ${{secrets.GIT_CREDENTIAL}}
+        with:
+          credentials: ${{secrets.GIT_CREDENTIAL}}
       - name: Run unit tests
         run: |
           git config --global user.name "github-actions[bot]"
