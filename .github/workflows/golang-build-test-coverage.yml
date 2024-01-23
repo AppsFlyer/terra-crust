@@ -1,6 +1,4 @@
 name: golang-build-test-coverage
-permissions: read-all
-
 on:
   push:
      branches-ignore:
