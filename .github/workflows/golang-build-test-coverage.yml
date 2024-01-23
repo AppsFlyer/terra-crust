@@ -101,8 +101,14 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version-file: './go.mod'
+      - name: Setup credentials
+        uses: fusion-engineering/setup-git-credentials@v2
+          with:
+            credentials: ${{secrets.GIT_CREDENTIAL}}
       - name: Run unit tests
         run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
           echo -e "protocol=https\nhost=github.com" | git credential fill
           go test ./... -coverprofile coverage.out -covermode atomic
           go tool cover -func coverage.out
