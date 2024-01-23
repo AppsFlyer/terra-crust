@@ -105,9 +105,6 @@ jobs:
           credentials: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com
       - name: Run unit tests
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          echo -e "protocol=https\nhost=github.com" | git credential fill
           go test ./... -coverprofile coverage.out -covermode atomic
           go tool cover -func coverage.out
       - uses: actions/upload-artifact@v2
