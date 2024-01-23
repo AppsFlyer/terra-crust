@@ -31,6 +31,13 @@ var mockBadVersion = map[string]*version_control.RemoteModule{
 	},
 }
 
+var mockBadRemote = map[string]*version_control.RemoteModule{
+	NamingModuleName: {
+		Url:     "https://gitbad.com/fajrinazis/terraform-aws-resource-naming.git",
+		Version: "bad-tag",
+	},
+}
+
 func TestCloneAndCleanupInternalGit(t *testing.T) {
 	CloneAndCleanup(t, false)
 }
@@ -140,6 +147,14 @@ func TestFailBadVersionExternalGit(t *testing.T) {
 	FailBadVersion(t, true)
 }
 
+func TestFailBadRemoteInternalGit(t *testing.T) {
+	FailGetGitCredentials(t, false)
+}
+
+func TestFailBadRemoteExternalGit(t *testing.T) {
+	FailGetGitCredentials(t, true)
+}
+
 func FailBadUrl(t *testing.T, externalGit bool) {
 	t.Parallel()
 
@@ -153,6 +168,15 @@ func FailBadVersion(t *testing.T, externalGit bool) {
 	t.Parallel()
 
 	err := CloneAndCleanupModules(mockBadVersion, externalGit)
+	if err == nil {
+		t.Errorf("expected error received error nil")
+	}
+}
+
+func FailGetGitCredentials(t *testing.T, externalGit bool) {
+	log := logger.NewSimple()
+	gitDriver := version_control.InitGitProvider(log)
+	err := gitDriver.CloneModules(mockBadRemote, ModulesTestPath, externalGit)
 	if err == nil {
 		t.Errorf("expected error received error nil")
 	}

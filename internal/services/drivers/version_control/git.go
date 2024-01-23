@@ -2,10 +2,12 @@ package version_control
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	log "github.com/AppsFlyer/go-logger"
 	"github.com/go-git/go-git/v5" /// with go modules disabled
@@ -23,6 +25,7 @@ const (
 	GitRefTag                   = "refs/tags/%s"
 	GitRefBranch                = "refs/remotes/%s/%s"
 	GitCredentialUrl            = "url=%s"
+	GitCredentialDeadLineMs     = 500
 	GitCredentialUserNamePrefix = "username="
 	GitCredentialPasswordPrefix = "password="
 	GitlabUserENV               = "GITLAB_USER"
@@ -169,7 +172,9 @@ func (g *Git) getGitCredentials(url string, externalGit bool) (userName string, 
 		return userName, password, nil
 	}
 	// Required until https://github.com/go-git/go-git/issues/490 addressed
-	cmd := exec.Command("git", "credential", "fill")
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(GitCredentialDeadLineMs*time.Millisecond))
+	cmd := exec.CommandContext(ctx, "git", "credential", "fill")
+	defer cancel()
 	cmd.Stdin = strings.NewReader(fmt.Sprintf(GitCredentialUrl, url))
 	var out bytes.Buffer
 	cmd.Stdout = &out

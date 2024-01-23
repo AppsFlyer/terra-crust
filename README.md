@@ -80,7 +80,7 @@ in order to activate this feature all you have to do is to set `fetch-remote` to
 ``` bash
 terra-crust terraform-all  --main-template-path=./terraform/main.tmpl  --destination-path="." --source-path=".../modules" --fetch-remote=true
 ```  
-or with an external git client with the flag `--ext-git` to true like so:  
+or with an external git credentials with the flag `--ext-git` to true like so:  
 ``` bash
 terra-crust terraform-all  --main-template-path=./terraform/main.tmpl  --destination-path="." --source-path=".../modules" --ext-git=true
 ```
