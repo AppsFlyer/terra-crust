@@ -104,7 +104,7 @@ jobs:
       - name: Setup credentials
         uses: fusion-engineering/setup-git-credentials@v2
         with:
-          credentials: ${{secrets.GIT_CREDENTIAL}}
+          credentials: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com
       - name: Run unit tests
         run: |
           git config --global user.name "github-actions[bot]"
