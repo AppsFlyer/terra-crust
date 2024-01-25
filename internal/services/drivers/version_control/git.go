@@ -1,29 +1,36 @@
 package version_control
 
 import (
+	"bytes"
+	"context"
 	"fmt"
-	"github.com/go-git/go-git/v5/plumbing"
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	log "github.com/AppsFlyer/go-logger"
 	"github.com/go-git/go-git/v5" /// with go modules disabled
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	cp "github.com/otiai10/copy"
 	"github.com/pkg/errors"
 )
 
 const (
-	FolderPathFormat = "%s/%s"
-	TempFolderPath   = "%s/temp_clone_path/%s"
-	remoteName       = "origin"
-	GitlabTokenENV   = "GITLAB_TOKEN"
-	GitRefTag        = "refs/tags/%s"
-	GitRefBranch     = "refs/remotes/%s/%s"
-	GitlabUserENV    = "GITLAB_USER"
-	GithubTokenENV   = "GITHUB_TOKEN"
-	GithubUserENV    = "GITHUB_USER"
+	FolderPathFormat            = "%s/%s"
+	TempFolderPath              = "%s/temp_clone_path/%s"
+	remoteName                  = "origin"
+	GitlabTokenENV              = "GITLAB_TOKEN"
+	GitRefTag                   = "refs/tags/%s"
+	GitRefBranch                = "refs/remotes/%s/%s"
+	GitCredentialUrl            = "url=%s"
+	GitCredentialDeadLineMs     = 500
+	GitCredentialUserNamePrefix = "username="
+	GitCredentialPasswordPrefix = "password="
+	GitlabUserENV               = "GITLAB_USER"
+	GithubTokenENV              = "GITHUB_TOKEN"
+	GithubUserENV               = "GITHUB_USER"
 )
 
 type RemoteModule struct {
@@ -78,25 +85,20 @@ func (g *Git) CloneModules(modules map[string]*RemoteModule, modulesSource strin
 
 func (g *Git) clone(moduleData *RemoteModule, directoryPath string, externalGit bool) error {
 
-	if externalGit {
-		args := []string{"clone", moduleData.Url, directoryPath, "--no-tags", "--single-branch", "--depth", "1", "-o", remoteName}
-		if moduleData.Version != "" {
-			args = append(args, "--branch", moduleData.Version)
-		}
-		err := exec.Command("git", args...).Run()
+	userName, token, err := g.getGitCredentials(moduleData.Url, externalGit)
+	if err != nil {
 		return err
 	}
-	userName, token := g.getGitUserNameAndToken(moduleData.Url)
 
-	cloneOpts := git.CloneOptions{
+	repo, err := git.PlainClone(directoryPath, false, &git.CloneOptions{
 		URL:        moduleData.Url,
 		Auth:       &http.BasicAuth{Password: token, Username: userName},
 		RemoteName: remoteName,
 		Depth:      1,
+	})
+	if err != nil {
+		return err
 	}
-
-	repo, err := git.PlainClone(directoryPath, false, &cloneOpts)
-
 	if moduleData.Version != "" {
 		workTree, err := repo.Worktree()
 		if err != nil {
@@ -116,7 +118,7 @@ func (g *Git) clone(moduleData *RemoteModule, directoryPath string, externalGit 
 			return bErr
 		}
 	}
-	return err
+	return nil
 }
 
 func (g *Git) CleanModulesFolders(modules map[string]*RemoteModule, modulesSource string) error {
@@ -153,6 +155,33 @@ func (g *Git) cleanTemp(modulesSourcePath string) error {
 	return nil
 }
 
+func (g *Git) getGitCredentials(url string, externalGit bool) (userName string, password string, err error) {
+	if !externalGit {
+		userName, password = g.getGitUserNameAndToken(url)
+		return userName, password, nil
+	}
+	// Required until https://github.com/go-git/go-git/issues/490 addressed
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(GitCredentialDeadLineMs*time.Millisecond))
+	cmd := exec.CommandContext(ctx, "git", "credential", "fill")
+	defer cancel()
+	cmd.Stdin = strings.NewReader(fmt.Sprintf(GitCredentialUrl, url))
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err = cmd.Run()
+	if err != nil {
+		return userName, password, err
+	}
+	lines := strings.Split(out.String(), "\n")
+	for _, line := range lines {
+		if strings.HasPrefix(line, GitCredentialUserNamePrefix) {
+			userName = strings.TrimPrefix(line, GitCredentialUserNamePrefix)
+		}
+		if strings.HasPrefix(line, GitCredentialPasswordPrefix) {
+			password = strings.TrimPrefix(line, GitCredentialPasswordPrefix)
+		}
+	}
+	return userName, password, nil
+}
 func (g *Git) getGitUserNameAndToken(url string) (string, string) {
 	if strings.Contains(url, "gitlab") {
 		return os.Getenv(GitlabUserENV), os.Getenv(GitlabTokenENV)
