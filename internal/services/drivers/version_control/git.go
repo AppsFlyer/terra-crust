@@ -158,7 +158,10 @@ func (g *Git) cleanTemp(modulesSourcePath string) error {
 func (g *Git) getGitCredentials(url string, externalGit bool) (userName string, password string, err error) {
 	if !externalGit {
 		userName, password = g.getGitUserNameAndToken(url)
-		return userName, password, nil
+		if userName != "" && password != "" {
+			return userName, password, nil
+		}
+		g.log.Warnf("credentials not found from env variables. falling back to git credentials")
 	}
 	// Required until https://github.com/go-git/go-git/issues/490 addressed
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(GitCredentialDeadLineMs*time.Millisecond))
