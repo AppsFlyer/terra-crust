@@ -1,6 +1,7 @@
 package version_control_test
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -15,14 +16,25 @@ const (
 	TerraCrustURL        = "https://github.com/AppsFlyer/terra-crust.git"
 )
 
-var ModulesTestPath = map[bool]string{
-	true:  "./ext-temp-git-test",
-	false: "./int-temp-git-test",
-}
+var ModulesTestPath = "./temp-git-test"
 
-var mockBadModules = map[string]*version_control.RemoteModule{
+var mockBadUrl = map[string]*version_control.RemoteModule{
 	TerraCrustModuleName: {
 		Url: "https://github.com/appsflyer/terra-crust/test/bad",
+	},
+}
+
+var mockBadVersion = map[string]*version_control.RemoteModule{
+	NamingModuleName: {
+		Url:     "https://github.com/fajrinazis/terraform-aws-resource-naming.git",
+		Version: "bad-tag",
+	},
+}
+
+var mockBadRemote = map[string]*version_control.RemoteModule{
+	NamingModuleName: {
+		Url:     "https://gitbad.com/fajrinazis/terraform-aws-resource-naming.git",
+		Version: "bad-tag",
 	},
 }
 
@@ -34,6 +46,21 @@ func TestCloneAndCleanupExternalGit(t *testing.T) {
 	CloneAndCleanup(t, true)
 }
 
+func CloneAndCleanupModules(modules map[string]*version_control.RemoteModule, externalGit bool) error {
+	log := logger.NewSimple()
+
+	gitDriver := version_control.InitGitProvider(log)
+
+	err := gitDriver.CloneModules(modules, ModulesTestPath, externalGit)
+	cErr := gitDriver.CleanModulesFolders(modules, ModulesTestPath)
+	if err != nil {
+		if cErr != nil {
+			return fmt.Errorf("failed to clone and cleanup module %v %v", err, cErr)
+		}
+		return err
+	}
+	return nil
+}
 func CloneAndCleanup(t *testing.T, externalGit bool) {
 	var mockModules = map[string]*version_control.RemoteModule{
 		TerraCrustModuleName: {
@@ -41,7 +68,7 @@ func CloneAndCleanup(t *testing.T, externalGit bool) {
 		},
 		NamingModuleName: {
 			Url:     "https://github.com/fajrinazis/terraform-aws-resource-naming.git",
-			Version: "v0.23.1",
+			Version: "v0.3.0",
 		},
 		ZonesModuleName: {
 			Url:  "https://github.com/terraform-aws-modules/terraform-aws-route53.git",
@@ -52,12 +79,12 @@ func CloneAndCleanup(t *testing.T, externalGit bool) {
 
 	gitDriver := version_control.InitGitProvider(log)
 
-	err := gitDriver.CloneModules(mockModules, ModulesTestPath[externalGit], externalGit)
+	err := gitDriver.CloneModules(mockModules, ModulesTestPath, externalGit)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	folders, err := getFolderAsMap(ModulesTestPath[externalGit])
+	folders, err := getFolderAsMap(ModulesTestPath)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -78,11 +105,11 @@ func CloneAndCleanup(t *testing.T, externalGit bool) {
 		t.Errorf("Expected 3 folder count received %d", len(folders))
 	}
 
-	if err = gitDriver.CleanModulesFolders(mockModules, ModulesTestPath[externalGit]); err != nil {
+	if err = gitDriver.CleanModulesFolders(mockModules, ModulesTestPath); err != nil {
 		t.Errorf("failed to clean up the downloaded modules,  %s", err.Error())
 	}
 
-	folders, err = getFolderAsMap(ModulesTestPath[externalGit])
+	folders, err = getFolderAsMap(ModulesTestPath)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -112,12 +139,44 @@ func TestFailBadUrlExternalGit(t *testing.T) {
 	FailBadUrl(t, true)
 }
 
+func TestFailBadVersionInternalGit(t *testing.T) {
+	FailBadVersion(t, false)
+}
+
+func TestFailBadVersionExternalGit(t *testing.T) {
+	FailBadVersion(t, true)
+}
+
+func TestFailBadRemoteInternalGit(t *testing.T) {
+	FailGetGitCredentials(t, false)
+}
+
+func TestFailBadRemoteExternalGit(t *testing.T) {
+	FailGetGitCredentials(t, true)
+}
+
 func FailBadUrl(t *testing.T, externalGit bool) {
 	t.Parallel()
+
+	err := CloneAndCleanupModules(mockBadUrl, externalGit)
+	if err == nil {
+		t.Errorf("expected error received error nil")
+	}
+}
+
+func FailBadVersion(t *testing.T, externalGit bool) {
+	t.Parallel()
+
+	err := CloneAndCleanupModules(mockBadVersion, externalGit)
+	if err == nil {
+		t.Errorf("expected error received error nil")
+	}
+}
+
+func FailGetGitCredentials(t *testing.T, externalGit bool) {
 	log := logger.NewSimple()
 	gitDriver := version_control.InitGitProvider(log)
-
-	err := gitDriver.CloneModules(mockBadModules, ModulesTestPath[externalGit], externalGit)
+	err := gitDriver.CloneModules(mockBadRemote, ModulesTestPath, externalGit)
 	if err == nil {
 		t.Errorf("expected error received error nil")
 	}
