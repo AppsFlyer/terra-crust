@@ -1,25 +1,36 @@
 package version_control
 
 import (
+	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	log "github.com/AppsFlyer/go-logger"
 	"github.com/go-git/go-git/v5" /// with go modules disabled
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	cp "github.com/otiai10/copy"
 	"github.com/pkg/errors"
 )
 
 const (
-	FolderPathFormat = "%s/%s"
-	TempFolderPath   = "%s/temp_clone_path/%s"
-	GitlabTokenENV   = "GITLAB_TOKEN"
-	GitlabUserENV    = "GITLAB_USER"
-	GithubTokenENV   = "GITHUB_TOKEN"
-	GithubUserENV    = "GITHUB_USER"
+	FolderPathFormat            = "%s/%s"
+	TempFolderPath              = "%s/temp_clone_path/%s"
+	remoteName                  = "origin"
+	GitlabTokenENV              = "GITLAB_TOKEN"
+	GitRefTag                   = "refs/tags/%s"
+	GitRefBranch                = "refs/remotes/%s/%s"
+	GitCredentialUrl            = "url=%s"
+	GitCredentialDeadLineMs     = 500
+	GitCredentialUserNamePrefix = "username="
+	GitCredentialPasswordPrefix = "password="
+	GitlabUserENV               = "GITLAB_USER"
+	GithubTokenENV              = "GITHUB_TOKEN"
+	GithubUserENV               = "GITHUB_USER"
 )
 
 type RemoteModule struct {
@@ -74,25 +85,40 @@ func (g *Git) CloneModules(modules map[string]*RemoteModule, modulesSource strin
 
 func (g *Git) clone(moduleData *RemoteModule, directoryPath string, externalGit bool) error {
 
-	remoteName := "origin"
-	if moduleData.Version != "" {
-		remoteName = moduleData.Version
-	}
-
-	if externalGit {
-		err := exec.Command("git", "clone", moduleData.Url, directoryPath, "--depth", "1", "-o", remoteName).Run()
+	userName, token, err := g.getGitCredentials(moduleData.Url, externalGit)
+	if err != nil {
 		return err
 	}
-	userName, token := g.getGitUserNameAndToken(moduleData.Url)
 
-	_, err := git.PlainClone(directoryPath, false, &git.CloneOptions{
+	repo, err := git.PlainClone(directoryPath, false, &git.CloneOptions{
 		URL:        moduleData.Url,
 		Auth:       &http.BasicAuth{Password: token, Username: userName},
 		RemoteName: remoteName,
 		Depth:      1,
 	})
-
-	return err
+	if err != nil {
+		return err
+	}
+	if moduleData.Version != "" {
+		workTree, err := repo.Worktree()
+		if err != nil {
+			return err
+		}
+		tagRef := fmt.Sprintf(GitRefTag, moduleData.Version)
+		g.log.Debugf("searching %s in %s", moduleData.Version, tagRef)
+		err = workTree.Checkout(&git.CheckoutOptions{
+			Branch: plumbing.ReferenceName(tagRef),
+		})
+		if err != nil {
+			branchRef := fmt.Sprintf(GitRefBranch, remoteName, moduleData.Version)
+			g.log.Debugf("version not found in tags ref, searching %s in %s", moduleData.Version, branchRef)
+			bErr := workTree.Checkout(&git.CheckoutOptions{
+				Branch: plumbing.ReferenceName(branchRef),
+			})
+			return bErr
+		}
+	}
+	return nil
 }
 
 func (g *Git) CleanModulesFolders(modules map[string]*RemoteModule, modulesSource string) error {
@@ -129,6 +155,36 @@ func (g *Git) cleanTemp(modulesSourcePath string) error {
 	return nil
 }
 
+func (g *Git) getGitCredentials(url string, externalGit bool) (userName string, password string, err error) {
+	if !externalGit {
+		userName, password = g.getGitUserNameAndToken(url)
+		if userName != "" && password != "" {
+			return userName, password, nil
+		}
+		g.log.Warnf("credentials not found from env variables. falling back to git credentials")
+	}
+	// Required until https://github.com/go-git/go-git/issues/490 addressed
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(GitCredentialDeadLineMs*time.Millisecond))
+	cmd := exec.CommandContext(ctx, "git", "credential", "fill")
+	defer cancel()
+	cmd.Stdin = strings.NewReader(fmt.Sprintf(GitCredentialUrl, url))
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err = cmd.Run()
+	if err != nil {
+		return userName, password, err
+	}
+	lines := strings.Split(out.String(), "\n")
+	for _, line := range lines {
+		if strings.HasPrefix(line, GitCredentialUserNamePrefix) {
+			userName = strings.TrimPrefix(line, GitCredentialUserNamePrefix)
+		}
+		if strings.HasPrefix(line, GitCredentialPasswordPrefix) {
+			password = strings.TrimPrefix(line, GitCredentialPasswordPrefix)
+		}
+	}
+	return userName, password, nil
+}
 func (g *Git) getGitUserNameAndToken(url string) (string, string) {
 	if strings.Contains(url, "gitlab") {
 		return os.Getenv(GitlabUserENV), os.Getenv(GitlabTokenENV)

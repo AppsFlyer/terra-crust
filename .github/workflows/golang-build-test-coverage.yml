@@ -4,7 +4,7 @@ on:
      branches-ignore:
       - main
   pull_request:
-    branches:    
+    branches:
       - main
   release:
 
@@ -51,7 +51,7 @@ jobs:
         # continue-on-error: true
         with:
           # Optional: version of golangci-lint to use in form of v1.2 or v1.2.3 or `latest` to use the latest version
-          version: v1.50.1
+          version: v1.56.0
 
           # Optional: working directory, useful for monorepos
           # TODO: remove before release
@@ -93,6 +93,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Setup credentials
+        uses: fusion-engineering/setup-git-credentials@v2
+        with:
+          credentials: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com
       - name: Setup go
         uses: actions/setup-go@v3
         with:
