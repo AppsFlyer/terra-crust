@@ -1,6 +1,7 @@
 module github.com/AppsFlyer/terra-crust
 
-go 1.22.1
+go 1.22
+
 
 require (
 	github.com/AppsFlyer/go-logger v1.1.1
