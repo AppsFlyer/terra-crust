@@ -12,7 +12,7 @@ require (
 	github.com/hashicorp/terraform-exec v0.20.0
 	github.com/otiai10/copy v1.14.0
 	github.com/pkg/errors v0.9.1
-	github.com/spf13/cobra v1.8.0
+	github.com/spf13/cobra v1.8.1
 	github.com/zclconf/go-cty v1.14.4
 )
 
