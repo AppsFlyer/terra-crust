@@ -5,7 +5,7 @@ go 1.22
 require (
 	github.com/AppsFlyer/go-logger v1.1.1
 	github.com/go-git/go-git/v5 v5.12.0
-	github.com/go-test/deep v1.1.0
+	github.com/go-test/deep v1.1.1
 	github.com/hashicorp/go-version v1.6.0
 	github.com/hashicorp/hc-install v0.6.4
 	github.com/hashicorp/hcl/v2 v2.20.1
